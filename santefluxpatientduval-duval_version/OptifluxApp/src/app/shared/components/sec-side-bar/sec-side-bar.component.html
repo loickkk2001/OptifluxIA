@@ -1,0 +1,19 @@
+
+<div class="flex flex-col py-8 h-full w-[15%] fixed top-14 transition duration-200 border" style="background: url('assets/images/background.png') no-repeat center center fixed; background-size: cover;">
+  <!-- Ajout de l'image de profil centrée -->
+  <div class="flex flex-col items-center mb-8">
+    <div class="h-12 w-12 rounded-full overflow-hidden border-2 border-white mb-2">
+      <img src="assets/images/profile.png" alt="profile" class="h-full w-full object-cover">
+    </div>
+  </div>
+
+  <!-- Liste des items -->
+  @for (item of items; track item.title) {
+    <app-side-bar-item [item]="item" />
+  }
+
+  <!-- Ajout de l'item de déconnexion -->
+  <div class="mt-auto mb-10 ">
+    <app-side-bar-item [item]="logoutItem" />
+  </div>
+</div>

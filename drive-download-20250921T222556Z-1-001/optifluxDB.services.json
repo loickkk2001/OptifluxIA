@@ -1,0 +1,70 @@
+[{
+  "_id": {
+    "$oid": "68149d4e034d9297d64651fe"
+  },
+  "name": "Cardiologie",
+  "head": "Ivy",
+  "created_at": {
+    "$date": "2025-05-02T12:24:14.504Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:07:22.014Z"
+  },
+  "matricule": "SERV184OKS"
+},
+{
+  "_id": {
+    "$oid": "681655abac77b52b195385b1"
+  },
+  "name": "Dermatologie",
+  "head": "john",
+  "created_at": {
+    "$date": "2025-05-03T19:43:07.048Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:06:59.492Z"
+  },
+  "matricule": "SERV559TNE"
+},
+{
+  "_id": {
+    "$oid": "6822d3571c09310cd0ad297f"
+  },
+  "name": "Pédiatrie",
+  "head": "Chantal",
+  "created_at": {
+    "$date": "2025-05-13T07:06:31.052Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:06:31.052Z"
+  },
+  "matricule": "SERV814WND"
+},
+{
+  "_id": {
+    "$oid": "682c71ba27dc4a936ea9b926"
+  },
+  "name": "chirurgie",
+  "head": "tom",
+  "created_at": {
+    "$date": "2025-05-20T14:12:42.313Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-20T14:12:42.313Z"
+  },
+  "matricule": "SERV686GWN"
+},
+{
+  "_id": {
+    "$oid": "6858f183383689a010e416f0"
+  },
+  "name": "abc",
+  "head": "Thomas",
+  "created_at": {
+    "$date": "2025-06-23T08:17:39.963Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-23T08:17:39.963Z"
+  },
+  "matricule": "SERV411OEK"
+}]

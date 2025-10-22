@@ -1,0 +1,244 @@
+<div class="dashboard-container p-4 md:p-6">
+  <p-toast></p-toast>
+  <h1 class="dashboard-title text-2xl md:text-3xl font-bold mb-6">Faire une demande</h1>
+
+  <p-tabView>
+    <!-- Onglet "Demander un box" -->
+    <p-tabPanel>
+      <ng-template pTemplate="header">
+        <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Demander un box de consultation</button>
+      </ng-template>
+      <div class="form-container p-4" [formGroup]="boxPlanForm">
+        <h3 class="mb-6 text-lg font-semibold col-span-2">Faire une demande d'un box</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Colonne de gauche -->
+          <div class="space-y-4">
+            <div class="form-group">
+              <label class="form-label">Date:</label>
+              <p-calendar formControlName="date" [minDate]="today" [showIcon]="true" dateFormat="dd/mm/yy" placeholder="Sélectionnez une date" [monthNavigator]="true" [yearNavigator]="true" yearRange="2023:2030" [showButtonBar]="true" class="w-full"></p-calendar>
+              <small *ngIf="boxPlanForm.get('date')?.touched && boxPlanForm.get('date')?.invalid" class="text-red-500">
+                Date requise.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Médecin en charge:</label>
+              <p-multiSelect id="doctors_id" formControlName="doctors_id" [options]="doctors" optionLabel="first_name" optionValue="id" placeholder="Sélectionnez les médecins" [filter]="true" display="chip" class="w-full"></p-multiSelect>
+              <small *ngIf="boxPlanForm.get('doctors_id')?.touched && boxPlanForm.get('doctors_id')?.invalid" class="text-red-500">
+                une médecin minimum est requis.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Pôle:</label>
+              <p-select [options]="poles" formControlName="poll" optionLabel="name" optionValue="id" placeholder="Sélectionner un pôle" class="w-full" [filter]="true"></p-select>
+              <small *ngIf="boxPlanForm.get('poll')?.touched && boxPlanForm.get('poll')?.invalid" class="text-red-500">
+                Pôle requis.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Commentaire :</label>
+              <textarea pInputText formControlName="comment" class="w-full" placeholder="Entrez un commentaire" rows="3"></textarea>
+              <small *ngIf="boxPlanForm.get('comment')?.touched && boxPlanForm.get('comment')?.invalid" class="text-red-500">
+                Commentaire requis.
+              </small>
+            </div>
+          </div>
+
+          <!-- Colonne de droite -->
+          <div class="space-y-4">
+            <div class="form-group">
+              <label class="form-label">Heure de début :</label>
+              <p-datePicker formControlName="period" [timeOnly]="true" [hourFormat]="'24'" placeholder="HH:MM" class="w-full"></p-datePicker>
+              <small *ngIf="boxPlanForm.get('period')?.touched && boxPlanForm.get('period')?.invalid" class="text-red-500">
+                Heure de début requise.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Salle :</label>
+              <p-select [options]="rooms" formControlName="room" optionLabel="name" optionValue="id" placeholder="Sélectionner une salle" class="w-full" [filter]="true"></p-select>
+              <small *ngIf="boxPlanForm.get('room')?.touched && boxPlanForm.get('room')?.invalid" class="text-red-500">
+                Salle requise.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nombre de consultation :</label>
+              <input pInputText formControlName="consultation_number" class="w-full" placeholder="Entrez le nombre de consultation" rows="3" />
+              <small *ngIf="boxPlanForm.get('consultation_number')?.touched && boxPlanForm.get('consultation_number')?.invalid" class="text-red-500">
+                Nombre de consultation requis.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nombre de temps / consultation :</label>
+              <input pInputText formControlName="consultation_time" class="w-full" placeholder="Entrez le temps de consultation en minutes" rows="3" />
+              <small *ngIf="boxPlanForm.get('consultation_time')?.touched && boxPlanForm.get('consultation_time')?.invalid" class="text-red-500">
+                Nombre de temps/consultation requis.
+              </small>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions mt-6">
+          <p-button label="Soumettre ma demande de box" styleClass="p-button-primary bg-blue-500 hover:bg-blue-600" (click)="submitBoxPlan()" [disabled]="boxPlanForm.invalid || isLoading"></p-button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <!-- Onglet "Demander un remplacement" 
+    <p-tabPanel>
+      <ng-template pTemplate="header">
+        <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Demander un remplacement</button>
+      </ng-template>
+      <div class="form-container p-4" [formGroup]="replacementForm">
+        <h3 class="mb-6 text-lg font-semibold col-span-2">Demander un remplacement à un collègue</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-4">
+            <div class="form-group">
+              <label class="form-label">Date de début :</label>
+              <p-datePicker formControlName="startDate" dateFormat="dd/mm/yy" [showIcon]="true" class="w-full" placeholder="Sélectionnez une date"></p-datePicker>
+              <small *ngIf="replacementForm.get('startDate')?.touched && replacementForm.get('startDate')?.invalid" class="text-red-500">
+                Date de début requise.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Date de fin :</label>
+              <p-datePicker formControlName="endDate" dateFormat="dd/mm/yy" [showIcon]="true" class="w-full" placeholder="Sélectionnez une date"></p-datePicker>
+              <small *ngIf="replacementForm.get('endDate')?.touched && replacementForm.get('endDate')?.invalid" class="text-red-500">
+                Date de fin requise.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Motif :</label>
+              <textarea pInputText formControlName="reason" class="w-full" placeholder="Entrez le motif" rows="3"></textarea>
+              <small *ngIf="replacementForm.get('reason')?.touched && replacementForm.get('reason')?.invalid" class="text-red-500">
+                Motif requis.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Remplaçant :</label>
+              <p-select [options]="nurses" formControlName="replacementId" optionLabel="first_name" optionValue="id" placeholder="Sélectionner un remplaçant" class="w-full" [filter]="true"></p-select>
+              <small *ngIf="replacementForm.get('replacementId')?.touched && replacementForm.get('replacementId')?.invalid" class="text-red-500">
+                Remplaçant requis.
+              </small>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="form-group">
+              <label class="form-label">Heure de début :</label>
+              <p-datePicker formControlName="startHour" [timeOnly]="true" [hourFormat]="'24'" placeholder="HH:MM" class="w-full"></p-datePicker>
+              <small *ngIf="replacementForm.get('startHour')?.touched && replacementForm.get('startHour')?.invalid" class="text-red-500">
+                Heure de début requise.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Heure de fin :</label>
+              <p-datePicker formControlName="endHour" [timeOnly]="true" [hourFormat]="'24'" placeholder="HH:MM" class="w-full"></p-datePicker>
+              <small *ngIf="replacementForm.get('endHour')?.touched && replacementForm.get('endHour')?.invalid" class="text-red-500">
+                Heure de fin requise.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Commentaire :</label>
+              <textarea pInputText formControlName="comment" class="w-full" placeholder="Entrez un commentaire" rows="3"></textarea>
+              <small *ngIf="replacementForm.get('comment')?.touched && replacementForm.get('comment')?.invalid" class="text-red-500">
+                Commentaire requis.
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 col-span-2">
+          <small *ngIf="replacementForm.errors?.['invalidTimeRange']" class="text-red-500">
+            La date et heure de fin doivent être postérieures à la date et heure de début.
+          </small>
+        </div>
+
+        <div class="form-actions mt-6">
+          <p-button label="Soumettre ma demande" styleClass="p-button-primary bg-blue-500 hover:bg-blue-600" (click)="submitReplacement()" [disabled]="replacementForm.invalid || isLoading || !serviceId || replacementForm.errors?.['invalidTimeRange']"></p-button>
+        </div>
+      </div>
+    </p-tabPanel>-->
+
+    <!-- Onglet "Signaler à mon encadrement" 
+    <p-tabPanel>
+      <ng-template pTemplate="header">
+        <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Signaler mon absence à l'encadreur</button>
+      </ng-template>
+      <div class="form-container p-4" [formGroup]="reportForm">
+        <h3 class="mb-6 text-lg font-semibold col-span-2">Signaler mon absence à l'hôpital</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-4">
+            <div class="form-group">
+              <label class="form-label">Date de début :</label>
+              <p-datePicker formControlName="startDate" dateFormat="dd/mm/yy" [showIcon]="true" class="w-full" placeholder="Sélectionnez une date"></p-datePicker>
+              <small *ngIf="reportForm.get('startDate')?.touched && reportForm.get('startDate')?.invalid" class="text-red-500">
+                Date de début requise.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Date de fin :</label>
+              <p-datePicker formControlName="endDate" dateFormat="dd/mm/yy" [showIcon]="true" class="w-full" placeholder="Sélectionnez une date"></p-datePicker>
+              <small *ngIf="reportForm.get('endDate')?.touched && reportForm.get('endDate')?.invalid" class="text-red-500">
+                Date de fin requise.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Motif :</label>
+              <textarea pInputText formControlName="reason" class="w-full" placeholder="Entrez le motif" rows="3"></textarea>
+              <small *ngIf="reportForm.get('reason')?.touched && reportForm.get('reason')?.invalid" class="text-red-500">
+                Motif requis.
+              </small>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="form-group">
+              <label class="form-label">Heure de début :</label>
+              <p-datePicker formControlName="startHour" [timeOnly]="true" [hourFormat]="'24'" placeholder="HH:MM" class="w-full"></p-datePicker>
+              <small *ngIf="reportForm.get('startHour')?.touched && reportForm.get('startHour')?.invalid" class="text-red-500">
+                Heure de début requise.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Heure de fin :</label>
+              <p-datePicker formControlName="endHour" [timeOnly]="true" [hourFormat]="'24'" placeholder="HH:MM" class="w-full"></p-datePicker>
+              <small *ngIf="reportForm.get('endHour')?.touched && reportForm.get('endHour')?.invalid" class="text-red-500">
+                Heure de fin requise.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Commentaire :</label>
+              <textarea pInputText formControlName="comment" class="w-full" placeholder="Entrez un commentaire" rows="3"></textarea>
+              <small *ngIf="reportForm.get('comment')?.touched && reportForm.get('comment')?.invalid" class="text-red-500">
+                Commentaire requis.
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 col-span-2">
+          <small *ngIf="reportForm.errors?.['invalidTimeRange']" class="text-red-500">
+            La date et heure de fin doivent être postérieures à la date et heure de début.
+          </small>
+        </div>
+
+        <div class="form-actions mt-6">
+          <p-button label="Soumettre ma demande" styleClass="p-button-primary bg-blue-500 hover:bg-blue-600" (click)="submitReport()" [disabled]="reportForm.invalid || isLoading || !serviceId || reportForm.errors?.['invalidTimeRange']"></p-button>
+        </div>
+      </div>
+    </p-tabPanel>-->
+  </p-tabView>
+</div>

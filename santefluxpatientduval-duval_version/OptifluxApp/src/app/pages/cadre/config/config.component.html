@@ -1,0 +1,384 @@
+<div class="dashboard-container p-4 md:p-6">
+    <p-toast></p-toast>
+    <p class="dashboard-title text-2xl md:text-3xl font-bold mb-6">Configurations</p>
+
+    <p-tabView (onChange)="onTabChange($event)">
+        <p-tabPanel>
+          <ng-template pTemplate="header">
+            <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Gestion des Services</button>
+          </ng-template>
+          <div class="flex justify-end py-5">
+            <p-drawer [(visible)]="serviceVisible" position="right" [header]="isEditMode ? 'Modifier un service' : 'Ajouter un service'">
+              <form [formGroup]="serviceForm" class="flex flex-col gap-2">
+                <p-iftalabel>
+                  <input pInputText id="name" autocomplete="off" formControlName="name" class="uniform-input"/>
+                  <label for="name">Nom</label>
+                </p-iftalabel>
+                <div class="h-5"></div>
+                <p-iftalabel>
+                  <p-select formControlName="head" [options]="cadreUsers" optionLabel="first_name" placeholder="Sélectionner un responsable" class="w-full md:w-56 uniform-input"/>
+                  <label for="name">Responsable</label>
+                </p-iftalabel>
+                <p-button (click)="isEditMode ? updateService() : onSubmit()" severity="contrast" [disabled]="loading()" class="mt-5">
+                  {{ isEditMode ? 'Mettre à jour' : 'Créer un nouveau service' }}
+                </p-button>
+              </form>
+            </p-drawer>
+            <!--<p-button icon="pi pi-upload" (click)="showUploadDialog('service')" severity="secondary" styleClass="mr-2"></p-button>-->
+            <p-button (click)="showAddDialog()" severity="contrast">Ajouter un Service</p-button>
+          </div>
+          
+          <div class="flex flex-col md:flex-row gap-4 mb-6">
+            <div class="flex-1">
+              <span class="p-input-icon-left w-full">
+                <input pInputText type="text" [(ngModel)]="searchTerm" 
+                       (input)="applyFilter()" 
+                       placeholder="  Rechercher par matricule, médecin, pôle ou salle..."
+                       class="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-11">
+              </span>
+            </div>
+          </div>
+          
+          <div class="table-container overflow-x-auto" style="border-radius: 0.75rem;">
+            <p-table [value]="filteredService" [paginator]="true" [rows]="rows" [totalRecords]="totalRecords" [lazy]="false" (onPage)="onPageChange($event)" [tableStyle]="{ 'min-width': '100%' }" responsiveLayout="scroll" class="w-full">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Matricule</th>
+                  <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Nom</th>
+                  <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Responsable</th>
+                  <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Actions</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-service>
+                <tr class="table-row hover:bg-gray-50">
+                  <td class="p-3 border-b">{{ service.matricule }}</td>
+                  <td class="p-3 border-b">{{ service.name }}</td>
+                  <td class="p-3 border-b">{{ service.head }}</td>
+                  <td class="space-x-3">
+                    <i class="pi pi-pencil cursor-pointer text-blue-500 hover:text-blue-700" (click)="showEditDialog(service)"></i>
+                    <i class="pi pi-trash cursor-pointer text-red-500 hover:text-red-700" (click)="confirmDelete(service)"></i>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td [colSpan]="filteredService.length" class="text-center py-4 justify-center">
+                    Aucun service
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          <!--<div class="card flex justify-end mt-5">
+            <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords" [rowsPerPageOptions]="[10, 20, 30]" />
+          </div>-->
+        </p-tabPanel>
+
+        <p-tabPanel>
+            <ng-template pTemplate="header">
+              <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Gestion des Pôles</button>
+            </ng-template>
+            <div class="flex justify-end py-5">
+              <p-drawer [(visible)]="poleVisible" position="right" [header]="isEditMode ? 'Modifier un pôle' : 'Ajouter un pôle'">
+                <form [formGroup]="poleForm" class="flex flex-col gap-2">
+                  <p-iftalabel>
+                    <input pInputText id="name" autocomplete="off" formControlName="name" class="uniform-input"/>
+                    <label for="name">Nom</label>
+                  </p-iftalabel>
+                  <div class="h-5"></div>
+                  <p-iftalabel>
+                    <p-select formControlName="head" [options]="cadreUsers" optionLabel="first_name" placeholder="Sélectionner un responsable" class="w-full md:w-56 uniform-input"/>
+                    <label for="name">Responsable</label>
+                  </p-iftalabel>
+                  <div class="h-5"></div>
+                  <p-iftalabel>
+                    <p-multiSelect id="poleSpecialities" formControlName="specialities" [options]="specialityOptions" optionLabel="label" optionValue="value" placeholder="Sélectionnez les spécialités" [filter]="true" display="chip" class="w-full md:w-56 uniform-input"></p-multiSelect>
+                    <label for="poleSpecialities">Spécialités</label>
+                  </p-iftalabel>
+                  <p-button (click)="isEditMode ? updatePole() : onSubmitPole()" severity="contrast" [disabled]="loading()" class="mt-5">
+                    {{ isEditMode ? 'Mettre à jour' : 'Créer un nouveau pôle' }}
+                  </p-button>
+                </form>
+              </p-drawer>
+              <!--<p-button icon="pi pi-upload" (click)="showUploadDialog('pole')" severity="secondary" styleClass="mr-2"></p-button>-->
+              <p-button (click)="showAddDialogPole()" severity="contrast">Ajouter un pôle</p-button>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+              <div class="flex-1">
+                <span class="p-input-icon-left w-full">
+                  <input pInputText type="text" [(ngModel)]="searchTerm" 
+                         (input)="applyFilter()" 
+                         placeholder="  Rechercher par matricule, médecin, pôle ou salle..."
+                         class="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-11">
+                </span>
+              </div>
+            </div>
+
+            <div class="table-container overflow-x-auto" style="border-radius: 0.75rem;">
+              <p-table [value]="filteredPole" [paginator]="true" [rows]="rows" [totalRecords]="totalRecords" [lazy]="false" (onPage)="onPageChange($event)" [tableStyle]="{ 'min-width': '100%' }" responsiveLayout="scroll" class="w-full">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Matricule</th>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Nom</th>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Responsable</th>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Spécialités</th>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-poles>
+                  <tr class="table-row hover:bg-gray-50">
+                    <td class="p-3 border-b">{{ poles.matricule }}</td>
+                    <td class="p-3 border-b">{{ poles.name }}</td>
+                    <td class="p-3 border-b">{{ poles.head }}</td>
+                    <td class="p-3 border-b">  
+                      <span *ngFor="let spec of poles.specialities; let last = last">
+                        <p-badge [value]="spec.name" [severity]="'secondary'" styleClass="p-mr-2"></p-badge>{{last ? '' : ' '}}
+                      </span>
+                    </td>
+                    <td class="space-x-3">
+                      <i class="pi pi-pencil cursor-pointer text-blue-500 hover:text-blue-700" (click)="showEditDialogPole(poles)"></i>
+                      <i class="pi pi-trash cursor-pointer text-red-500 hover:text-red-700" (click)="confirmDeletePole(poles)"></i>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [colSpan]="filteredPole.length" class="text-center py-4 justify-center">
+                      Aucun pôle
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+            <!--<div class="card flex justify-end mt-5">
+              <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords" [rowsPerPageOptions]="[10, 20, 30]" />
+            </div>-->
+          </p-tabPanel>
+
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Gestion des salles</button>
+            </ng-template>
+            <div class="flex justify-end py-5">
+              <p-drawer [(visible)]="roomVisible" position="right" [header]="isEditMode ? 'Modifier une salle' : 'Ajouter une salle '">
+                <form [formGroup]="roomForm" class="flex flex-col gap-2">
+                  <p-iftalabel>
+                    <input pInputText id="name" autocomplete="off" formControlName="name" class="uniform-input"/>
+                    <label for="name">Nom</label>
+                  </p-iftalabel>
+                  <div class="h-5"></div>
+                  <p-iftalabel>
+                    <input pInputText id="localisation" autocomplete="off" formControlName="localisation" class="uniform-input"/>
+                    <label for="name">Localisation</label>
+                  </p-iftalabel>
+                  <div class="h-5"></div>
+                  <p-iftalabel>
+                    <input pInputText id="description" autocomplete="off" formControlName="description" class="uniform-input"/>
+                    <label for="name">Description</label>
+                  </p-iftalabel>
+                  <p-button (click)="isEditMode ? updateRoom() : onSubmitRoom()" severity="contrast" [disabled]="loading()" class="mt-5">
+                    {{ isEditMode ? 'Mettre à jour' : 'Ajouter une salle' }}
+                  </p-button>
+                </form>
+              </p-drawer>
+              <!--<p-button icon="pi pi-upload" (click)="showUploadDialog('room')" severity="secondary" styleClass="mr-2"></p-button>-->
+              <p-button (click)="showAddDialogRoom()" severity="contrast">Ajouter une salle </p-button>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+              <div class="flex-1">
+                <span class="p-input-icon-left w-full">
+                  <input pInputText type="text" [(ngModel)]="searchTerm" 
+                         (input)="applyFilter()" 
+                         placeholder="  Rechercher par matricule, médecin, pôle ou salle..."
+                         class="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-11">
+                </span>
+              </div>
+              <div class="w-full md:w-64">
+                <p-dropdown [options]="statusOptions" [(ngModel)]="selectedStatus" 
+                            optionLabel="label" optionValue="value" (onChange)="applyFilter()"
+                            [showClear]="true" placeholder="Filtrer par statut"
+                            styleClass="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-11">
+                </p-dropdown>
+              </div>
+            </div>
+
+            <div class="table-container overflow-x-auto" style="border-radius: 0.75rem;">
+              <p-table [value]="filteredRoom" [paginator]="true" [rows]="rows" [totalRecords]="totalRecords" [lazy]="false" (onPage)="onPageChange($event)" [tableStyle]="{ 'min-width': '100%' }" responsiveLayout="scroll" class="w-full">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Matricule</th>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Nom</th>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Localisation</th>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Description</th>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Status</th>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rooms>
+                  <tr class="table-row hover:bg-gray-50">
+                    <td class="p-3 border-b">{{ rooms.matricule }}</td>
+                    <td class="p-3 border-b">{{ rooms.name }}</td>
+                    <td class="p-3 border-b">{{ rooms.localisation }}</td>
+                    <td class="p-3 border-b">{{ rooms.description }}</td>
+                    <td class="p-3 border-b">
+                      <p-badge
+                        [value]="rooms.status"
+                        [severity]="getBadgeSeverity(rooms.status)"
+                        styleClass="p-mr-2"
+                      ></p-badge>
+                    </td>
+                    <td class="space-x-3">
+                      <i class="pi pi-pencil cursor-pointer text-blue-500 hover:text-blue-700" (click)="showEditDialogRoom(rooms)"></i>
+                      <i class="pi pi-trash cursor-pointer text-red-500 hover:text-red-700" (click)="confirmDeleteRoom(rooms)"></i>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [colSpan]="filteredRoom.length" class="text-center py-4 justify-center">
+                      Aucune salle
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+            <!--<div class="card flex justify-end mt-5">
+              <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords" [rowsPerPageOptions]="[10, 20, 30]" />
+            </div>-->
+          </p-tabPanel>
+
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Gestion des Specialités</button>
+            </ng-template>
+            <div class="flex justify-end py-5">
+              <p-drawer [(visible)]="specialityVisible" position="right" [header]="isEditMode ? 'Modifier une specialité' : 'Ajouter une specialité'">
+                <form [formGroup]="specialityForm" class="flex flex-col gap-2">
+                  <p-iftalabel>
+                    <input pInputText id="name" autocomplete="off" formControlName="name" class="uniform-input"/>
+                    <label for="name">Nom</label>
+                  </p-iftalabel>
+                  <p-button (click)="isEditMode ? updateSpeciality() : onSubmitSpeciality()" severity="contrast" [disabled]="loading()" class="mt-5">
+                    {{ isEditMode ? 'Mettre à jour' : 'Créer une nouvelle specialité' }}
+                  </p-button>
+                </form>
+              </p-drawer>
+              <!--<p-button icon="pi pi-upload" (click)="showUploadDialog('speciality')" severity="secondary" styleClass="mr-2"></p-button>-->
+              <p-button (click)="showAddDialogSpeciality()" severity="contrast">Ajouter une specialité</p-button>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+              <div class="flex-1">
+                <span class="p-input-icon-left w-full">
+                  <input pInputText type="text" [(ngModel)]="searchTerm" 
+                         (input)="applyFilter()" 
+                         placeholder="  Rechercher par matricule, médecin, pôle ou salle..."
+                         class="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-11">
+                </span>
+              </div>
+            </div>
+
+            <div class="table-container overflow-x-auto" style="border-radius: 0.75rem;">
+              <p-table [value]="filteredSpeciality" [paginator]="true" [rows]="rows" [totalRecords]="totalRecords" [lazy]="false" (onPage)="onPageChange($event)" [tableStyle]="{ 'min-width': '100%' }" responsiveLayout="scroll" class="w-full">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Matricule</th>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Nom</th>
+                    <th class="p-3 bg-gray-200 border-b" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-specialities>
+                  <tr class="table-row hover:bg-gray-50">
+                    <td class="p-3 border-b">{{ specialities.matricule }}</td>
+                    <td class="p-3 border-b">{{ specialities.name }}</td>
+                    <td class="space-x-3">
+                      <i class="pi pi-pencil cursor-pointer text-blue-500 hover:text-blue-700" (click)="showEditDialogSpeciality(specialities)"></i>
+                      <i class="pi pi-trash cursor-pointer text-red-500 hover:text-red-700" (click)="confirmDeleteSpeciality(specialities)"></i>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [colSpan]="filteredSpeciality.length" class="text-center py-4 justify-center">
+                      Aucune spécialité
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+            <!--<div class="card flex justify-end mt-5">
+              <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords" [rowsPerPageOptions]="[10, 20, 30]" />
+            </div>-->
+          </p-tabPanel>
+    </p-tabView>
+</div>
+  
+  <p-dialog header="Confirmation de suppression" [(visible)]="deleteServiceDialog" [style]="{width: '450px'}" [modal]="true">
+    <div class="confirmation-content">
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+      <span>Êtes-vous sûr de vouloir supprimer ce service?</span>
+    </div>
+    <ng-template pTemplate="footer">
+      <p-button icon="pi pi-times" (click)="deleteServiceDialog = false" label="Annuler" styleClass="p-button-secondary"></p-button>
+      <p-button icon="pi pi-check" (click)="deleteService()" label="Supprimer" styleClass="p-button-danger"></p-button>
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog header="Confirmation de suppression" [(visible)]="deletePoleDialog" [style]="{width: '450px'}" [modal]="true">
+    <div class="confirmation-content">
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+      <span>Êtes-vous sûr de vouloir supprimer ce pôle?</span>
+    </div>
+    <ng-template pTemplate="footer">
+      <p-button icon="pi pi-times" (click)="deletePoleDialog = false" label="Annuler" styleClass="p-button-secondary"></p-button>
+      <p-button icon="pi pi-check" (click)="deletePole()" label="Supprimer" styleClass="p-button-danger"></p-button>
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog header="Confirmation de suppression" [(visible)]="deleteRoomDialog" [style]="{width: '450px'}" [modal]="true">
+    <div class="confirmation-content">
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+      <span>Êtes-vous sûr de vouloir supprimer cette chambre?</span>
+    </div>
+    <ng-template pTemplate="footer">
+      <p-button icon="pi pi-times" (click)="deleteRoomDialog = false" label="Annuler" styleClass="p-button-secondary"></p-button>
+      <p-button icon="pi pi-check" (click)="deleteRoom()" label="Supprimer" styleClass="p-button-danger"></p-button>
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog header="Confirmation de suppression" [(visible)]="deleteSpecialityDialog" [style]="{width: '450px'}" [modal]="true">
+    <div class="confirmation-content">
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+      <span>Êtes-vous sûr de vouloir supprimer cette specialité?</span>
+    </div>
+    <ng-template pTemplate="footer">
+      <p-button icon="pi pi-times" (click)="deleteSpecialityDialog = false" label="Annuler" styleClass="p-button-secondary"></p-button>
+      <p-button icon="pi pi-check" (click)="deleteSpeciality()" label="Supprimer" styleClass="p-button-danger"></p-button>
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog header="Upload de fichier Excel" [(visible)]="uploadDialogVisible" [style]="{width: '450px'}" [modal]="true">
+    <div class="flex flex-col gap-4">
+      <p>Veuillez sélectionner un fichier Excel à uploader pour les {{uploadType}}s</p>
+      <p-fileUpload 
+        [url]="uploadUrl"
+        name="file"
+        accept=".xlsx,.xls"
+        (onUpload)="onUpload($event)"
+        (onBeforeUpload)="onBeforeUpload($event)"
+        (onError)="onUploadError($event)"
+        maxFileSize="1000000">
+        <ng-template pTemplate="content">
+          <div *ngIf="uploadProgress > 0" class="w-full bg-gray-200 rounded-full h-2.5">
+            <div class="bg-blue-600 h-2.5 rounded-full" [style.width]="uploadProgress + '%'"></div>
+          </div>
+        </ng-template>
+      </p-fileUpload>
+    </div>
+    <ng-template pTemplate="footer">
+      <p-button icon="pi pi-times" (click)="uploadDialogVisible = false" label="Annuler" styleClass="p-button-secondary"></p-button>
+    </ng-template>
+  </p-dialog>
+  

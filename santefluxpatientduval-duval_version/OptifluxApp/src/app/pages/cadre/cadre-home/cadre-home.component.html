@@ -1,0 +1,166 @@
+<div class="dashboard-container p-4 md:p-6">
+  <p class="dashboard-title text-2xl md:text-3xl font-bold mb-6">Tableau de Bord</p>
+  
+  <!-- Cartes de statistiques -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <p-card header="Mes réservations d'aujourd'hui" class="shadow-md">
+      <div class="flex items-center justify-between">
+        <p class="text-5xl font-bold">{{stats.todayReservation}}</p>
+        <i class="pi pi-calendar text-4xl opacity-50"></i>
+      </div>
+      <p class="text-sm mt-2">Demandes aujourd'hui</p>
+    </p-card>
+
+    <p-card header="Toutes mes réservations ce mois" class="shadow-md">
+      <div class="flex items-center justify-between">
+        <p class="text-5xl font-bold">{{stats.monthReservation}}</p>
+        <i class="pi pi-chart-bar text-4xl opacity-50"></i>
+      </div>
+      <p class="text-sm mt-2">Demandes ce mois</p>
+    </p-card>
+
+    <p-card header="N° de secrétaire" class="shadow-md">
+      <div class="flex items-center justify-between">
+        <p class="text-5xl font-bold">{{nurseCount}}</p>
+        <i class="pi pi-id-card text-4xl opacity-50"></i>
+      </div>
+      <p class="text-sm mt-2">Dans les services</p>
+    </p-card>
+
+    <p-card header="N° de médecin" class="shadow-md">
+      <div class="flex items-center justify-between">
+        <p class="text-5xl font-bold">{{doctorCount}}</p>
+        <i class="pi pi-id-card text-4xl opacity-50"></i>
+      </div>
+      <p class="text-sm mt-2">Dans les services</p>
+    </p-card>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <p-card header="N° de services" class="shadow-md">
+      <div class="flex items-center justify-between">
+        <p class="text-5xl font-bold">{{services.length}}</p>
+        <i class="pi pi-users text-4xl opacity-50"></i>
+      </div>
+      <p class="text-sm mt-2">Services de l'hôpital</p>
+    </p-card>
+
+    <p-card header="N° de salles" class="shadow-md">
+      <div class="flex items-center justify-between">
+        <p class="text-5xl font-bold">{{rooms.length}}</p>
+        <i class="pi pi-users text-4xl opacity-50"></i>
+      </div>
+      <p class="text-sm mt-2">Salles de l'hôpital</p>
+    </p-card>
+
+    <p-card header="N° de pôles" class="shadow-md">
+      <div class="flex items-center justify-between">
+        <p class="text-5xl font-bold">{{poles.length}}</p>
+        <i class="pi pi-users text-4xl opacity-50"></i>
+      </div>
+      <p class="text-sm mt-2">Pôles de l'hôpital</p>
+    </p-card>
+
+    <p-card header="N° de specialités" class="shadow-md">
+      <div class="flex items-center justify-between">
+        <p class="text-5xl font-bold">{{specialities.length}}</p>
+        <i class="pi pi-users text-4xl opacity-50"></i>
+      </div>
+      <p class="text-sm mt-2">Specialtés de l'hôpital</p>
+    </p-card>
+  </div>
+
+  <!-- Graphique -->
+  <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+    <p-chart type="bar" [data]="chartData" [options]="chartOptions" height="300px"></p-chart>
+  </div>
+
+  <!-- Absences du jour 
+  <p-card header="Absences Aujourd'hui" class="mb-6">
+    <p-table 
+      [value]="todayAbsences" 
+      [paginator]="true" 
+      [rows]="5"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      styleClass="p-datatable-striped"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th *ngFor="let col of cols" [pSortableColumn]="col.field">
+            {{col.header}}
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-absence>
+        <tr>
+          <td>{{absence.staffName}}</td>
+          <td>{{absence.startDate}}</td>
+          <td>{{absence.endDate}}</td>
+          <td>{{absence.replacementName}}</td>
+          <td>
+            <p-tag 
+              [value]="absence.status" 
+              [severity]="getBadgeSeverity(absence.status)"
+            ></p-tag>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [colSpan]="cols.length" class="text-center py-4 justify-center">
+            Aucune absence aujourd'hui
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>-->
+
+  <p-card header="Réservations Aujourd'hui" class="mb-6">
+    <p-table 
+      [value]="todayReservations" 
+      [paginator]="true" 
+      [rows]="6"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      styleClass="p-datatable-striped"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th *ngFor="let col of cols1" [pSortableColumn]="col.field">
+            {{col.header}}
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-reservation>
+        <tr>
+          <td>{{reservation.matricule}}</td>
+          <td>{{reservation.doctors}}</td>
+          <td>{{reservation.room}}</td>
+          <td>{{reservation.time}}</td>
+          <td>{{reservation.consultation_number}}</td>
+          <td>
+            <p-tag 
+              [value]="reservation.status" 
+              [severity]="getBadgeSeverity(reservation.status)"
+            ></p-tag>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [colSpan]="cols1.length" class="text-center py-4 justify-center">
+            Aucune réservation aujourd'hui
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [colSpan]="todayReservations.length" class="text-center py-4 justify-center">
+            Aucune réservation aujourd'hui
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <p-toast></p-toast>
+</div>

@@ -1,0 +1,93 @@
+<div class="flex-1 p-8 bg-white rounded w-4/5">
+  <p class="text-3xl font-bold">Créer un compte</p>
+  <p-breadcrumb class="max-w-full" [model]="items" />
+  <p class="py-6">Entrez les informations du compte que vous voulez créer</p>
+  <form [formGroup]="adminForm" class="flex flex-col w-1/2 gap-6">
+    <div class="flex flex-col gap-2">
+      <label for="first_name">Prénom</label>
+      <input
+        pInputText
+        id="first_name"
+        name="first_name"
+        formControlName="first_name"
+        placeholder="Entrez le prénom"
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for="last_name">Nom</label>
+      <input
+        pInputText
+        id="last_name"
+        name="last_name"
+        formControlName="last_name"
+        placeholder="Entrez le nom"
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for="phoneNumber">Numéro de téléphone</label>
+      <input
+        pInputText
+        id="phoneNumber"
+        name="phoneNumber"
+        formControlName="phoneNumber"
+        placeholder="Entrez le numéro de téléphone"
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for="email">Email</label>
+      <input
+        pInputText
+        id="email"
+        name="email"
+        formControlName="email"
+        placeholder="Entrez l'email"
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for="role">Rôle</label>
+      <p-select
+        id="role"
+        name="role"
+        formControlName="role"
+        [options]="roles"
+        optionLabel="name"
+        optionValue="value"
+        placeholder="Sélectionnez un rôle"
+        class="w-full"
+      />
+    </div>
+    <div class="flex flex-col gap-2 w-full">
+      <label for="password">Mot de passe</label>
+      <p-password
+        id="password"
+        name="password"
+        formControlName="password"
+        [toggleMask]="true"
+        placeholder="Entrez le mot de passe"
+      />
+    </div>
+    <div class="flex flex-col gap-2 w-full">
+      <label for="re_password">Confirmer le mot de passe</label>
+      <p-password
+        id="re_password"
+        name="re_password"
+        formControlName="re_password"
+        [toggleMask]="true"
+        placeholder="Confirmez le mot de passe"
+      />
+      <small
+        *ngIf="adminForm.get('re_password')?.errors?.['passwordMismatch']"
+        class="text-red-500"
+      >
+        Les mots de passe ne correspondent pas
+      </small>
+    </div>
+    <p-button
+      (onClick)="submit()"
+      label="Valider"
+      severity="contrast"
+      [style]="{ width: '100%' }"
+      [disabled]="loading"
+    />
+  </form>
+</div>

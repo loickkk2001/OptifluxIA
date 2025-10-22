@@ -1,0 +1,46 @@
+/* Assurez-vous que le conteneur de la table a une hauteur fixe */
+.p-datatable.p-datatable-scrollable .p-datatable-wrapper {
+  overflow-y: auto !important; /* Défilement vertical uniquement pour la table */
+  overflow-x: auto !important; /* Défilement horizontal si nécessaire */
+}
+
+/* Éviter que le conteneur parent force un défilement global */
+#planning-to-print {
+  overflow: hidden !important; /* Supprime le défilement global du conteneur parent */
+}
+
+/* Ajuster la largeur de la table pour qu'elle soit responsive */
+.p-datatable.p-datatable-sm {
+  width: 100% !important;
+  min-width: unset !important; /* Supprime la contrainte de largeur minimale */
+}
+
+/* Optionnel : Ajouter un style pour améliorer l'apparence du défilement */
+.p-datatable-scrollable .p-datatable-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.p-datatable-scrollable .p-datatable-wrapper::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.p-datatable-scrollable .p-datatable-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@media print {
+  body * {
+      visibility: hidden;
+  }
+  #planning-to-print, #planning-to-print * {
+      visibility: visible;
+  }
+  #planning-to-print {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+  }
+}

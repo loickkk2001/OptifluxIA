@@ -1,0 +1,13 @@
+<!-- TopBarComponent en haut de la page -->
+<app-top-bar *ngIf="isCadre"></app-top-bar>
+
+<!-- Conteneur principal avec sidebar et contenu -->
+<div class="flex h-screen">
+  <!-- Sidebar pour admin -->
+  <app-cadre-side-bar *ngIf="isCadre"></app-cadre-side-bar>
+
+  <!-- Contenu principal -->
+  <div class="flex-1 p-4 ml-[15%] mt-14 min-h-full h-fit bg-opacity-90" style="background: url('assets/images/background.png') no-repeat center center fixed; background-size: cover;">
+    <router-outlet></router-outlet>
+  </div>
+</div>

@@ -1,0 +1,75 @@
+<div class="flex-1 p-8">
+  <p class="text-3xl font-bold">Créer un service</p>
+  <p-breadcrumb class="max-w-full" [model]="items" />
+  <p class="py-6">Entrez les informations du service que vous voulez créer</p>
+  <form [formGroup]="adminForm" class="flex flex-col w-1/2 gap-6">
+    <div class="flex flex-col gap-2">
+      <label for="service-name">Nom</label>
+      <input
+        pInputText
+        id="service-name"
+        name="service-name"
+        aria-describedby="name-help"
+        formControlName="name"
+        placeholder="Ex: Cardiologie, Dermatologie..."
+      />
+      <small id="name-help" class="text-gray-500"
+        >Entrez le nom du service</small
+      >
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="service-head">Responsable</label>
+      <p-select
+        id="service-head"
+        name="service-head"
+        formControlName="head"
+        [options]="users"
+        optionLabel="first_name"
+        placeholder="Choisir le responsable"
+        class="w-full"
+        aria-describedby="head-help"
+        inputId="service-head-input"
+        [showClear]="true"
+        [filter]="true"
+        filterBy="first_name,last_name"
+      />
+      <small id="head-help" class="text-gray-500"
+        >Sélectionnez un utilisateur cadre</small
+      >
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="service-members">Membres du service</label>
+      <p-multiselect
+        id="service-members"
+        name="service-members"
+        [options]="users"
+        formControlName="members"
+        optionLabel="first_name"
+        placeholder="Choisir les membres"
+        [maxSelectedLabels]="3"
+        styleClass="w-full md:w-80"
+        aria-describedby="members-help"
+        inputId="service-members-input"
+        [showClear]="true"
+        [filter]="true"
+        filterBy="first_name,last_name"
+      />
+      <small id="members-help" class="text-gray-500"
+        >Sélectionnez les membres du service (optionnel)</small
+      >
+    </div>
+
+    <p-button
+      id="submit-button"
+      name="submit-button"
+      type="submit"
+      (onClick)="submit()"
+      label="Valider"
+      severity="contrast"
+      [style]="{ width: '100%' }"
+      aria-label="Créer le service"
+    />
+  </form>
+</div>

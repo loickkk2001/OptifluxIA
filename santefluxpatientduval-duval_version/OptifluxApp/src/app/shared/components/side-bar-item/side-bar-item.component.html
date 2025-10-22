@@ -1,0 +1,22 @@
+<a
+  [href]="item.isLogout ? 'javascript:void(0)' : item.link"
+  [ngClass]="{
+    'text-gray-700 bg-button': isSelected(),
+    'bg-white text-gray-700': !isSelected()
+  }"
+  class="font-semibold cursor-pointer hover:bg-button hover:text-gray-700 flex gap-3 text-sm items-center rounded-r-xl mb-3 mt-3 justify-start h-10 w-4/5 transition-colors duration-200"
+  (click)="handleClick($event)"
+>
+  <div
+    [ngClass]="{ 'bg-white': isSelected() }"
+    class="h-3 w-1 rounded-r-md"
+  ></div>
+  <span
+    [class]="item.icon"
+    [ngClass]="{
+      'text-blue-600': isSelected(),
+      'text-gray-600': !isSelected()
+    }"
+  ></span>
+  <p>{{ item.title }}</p>
+</a>

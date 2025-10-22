@@ -1,0 +1,96 @@
+[{
+  "_id": {
+    "$oid": "68176029cf6740c9f658450f"
+  },
+  "name": "CH045",
+  "localisation": "RAS",
+  "description": "RAS",
+  "created_at": {
+    "$date": "2025-05-04T14:40:09.392Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-19T14:46:47.365Z"
+  },
+  "matricule": "R485VOH",
+  "status": "Disponible"
+},
+{
+  "_id": {
+    "$oid": "681df938a742536ac19d0202"
+  },
+  "name": "CH475",
+  "localisation": "RAS",
+  "description": "RAS",
+  "status": "Disponible",
+  "created_at": {
+    "$date": "2025-05-09T14:46:48.572Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-13T13:53:48.788Z"
+  },
+  "matricule": "R832KSP"
+},
+{
+  "_id": {
+    "$oid": "6822d5c21c09310cd0ad2984"
+  },
+  "name": "CH001",
+  "localisation": "RAS",
+  "description": "RAS",
+  "status": "Disponible",
+  "created_at": {
+    "$date": "2025-05-13T07:16:50.708Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-22T10:06:25.044Z"
+  },
+  "matricule": "R377URC"
+},
+{
+  "_id": {
+    "$oid": "6822d5e11c09310cd0ad2985"
+  },
+  "name": "CH302",
+  "localisation": "RAS",
+  "description": "RAS",
+  "status": "Réservé",
+  "created_at": {
+    "$date": "2025-05-13T07:17:21.748Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-23T08:24:40.397Z"
+  },
+  "matricule": "R284QVG"
+},
+{
+  "_id": {
+    "$oid": "6822d5ef1c09310cd0ad2986"
+  },
+  "name": "CH860",
+  "localisation": "RAS",
+  "description": "RAS",
+  "status": "Disponible",
+  "created_at": {
+    "$date": "2025-05-13T07:17:35.371Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-23T08:21:13.618Z"
+  },
+  "matricule": "R565IAE"
+},
+{
+  "_id": {
+    "$oid": "6822d61a1c09310cd0ad2987"
+  },
+  "name": "CH136",
+  "localisation": "RASi",
+  "description": "RAS",
+  "status": "Disponible",
+  "created_at": {
+    "$date": "2025-05-13T07:18:18.197Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-23T08:18:14.928Z"
+  },
+  "matricule": "R377CZP"
+}]

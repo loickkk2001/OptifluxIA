@@ -1,0 +1,68 @@
+<div class="dashboard-container p-4 md:p-6">
+  <p-toast></p-toast>
+  <p class="dashboard-title text-2xl md:text-3xl font-bold mb-6">Absences signalées</p>
+  <div class="mr-10">
+    <div class="p-5 bg-white w-full rounded-3xl">
+      <div class="flex justify-between items-center">
+        <div class="flex gap-2 items-center">
+          <i class="pi pi-arrow-left cursor-pointer" style="font-size: 0.7rem" (click)="goBack()"></i>
+          <p class="text-sm cursor-pointer" (click)="goBack()">Retour</p>
+        </div>
+        <p class="text-2xl font-semibold">Traitement absence</p>
+        <div></div>
+      </div>
+      <div class="flex pt-10 justify-between">
+        <div class="flex flex-col gap-4">
+          <p>Nom du demandeur : {{ staff ? staff.first_name + ' ' + staff.last_name : 'Inconnu' }}</p>
+          <p>Service : {{ service ? service.name : 'Non attribué' }}</p>
+          <p>Durée de l’absence : {{ getAbsenceDuration() }} Jours</p>
+          <p>Motif : {{ absence?.reason || 'Non spécifié' }}</p>
+        </div>
+        <div class="flex flex-col gap-4">
+          <p>Nom du remplaçant : {{ replacement ? replacement.first_name + ' ' + replacement.last_name : 'Inconnu' }}</p>
+          <p>Date début : {{ absence ? formatDate(absence.start_date) : 'N/A' }}</p>
+          <p>Date Fin : {{ absence ? formatDate(absence.end_date) : 'N/A' }}</p>
+          <p>Status :
+            <p-badge
+              [value]="absence?.status || 'Non spécifié'"
+              [severity]="getBadgeSeverity(absence?.status || 'Non spécifié')"
+              styleClass="p-mr-2"
+            ></p-badge>
+          </p>
+        </div>
+        <div></div>
+      </div>
+      <div class="flex gap-5 pt-5 items-center">
+        <p>Choisir un Remplaçant : </p>
+        <p-select
+          [options]="users"
+          [(ngModel)]="selectedUser"
+          optionLabel="name"
+          placeholder="Sélectionner un remplaçant"
+          class="w-full md:w-72 h-10"
+        />
+      </div>
+      <div class="flex pt-20 justify-around">
+        <button
+          class="font-semibold text-[#065594]"
+          (click)="checkAvailability()"
+        >
+          Vérifier disponibilité
+        </button>
+        <div class="flex gap-10">
+          <p-button
+            label="Appliquer"
+            severity="info"
+            [style]="{'background-color': '#065594'}"
+            (click)="approveAbsence()"
+          />
+          <p-button
+            label="Refuser"
+            severity="danger"
+            (click)="refuseAbsence()"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

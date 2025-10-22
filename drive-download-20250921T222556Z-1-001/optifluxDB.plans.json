@@ -1,0 +1,408 @@
+[{
+  "_id": {
+    "$oid": "6820db151c09310cd0ad2976"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "68149cea034d9297d64651fc"
+  ],
+  "poll": "681df8b6a742536ac19d0201",
+  "room": "681df938a742536ac19d0202",
+  "period": "08:00",
+  "date": "2025-05-12",
+  "consultation_number": "10",
+  "consultation_time": "25",
+  "comment": "ras",
+  "status": "Plus disponible",
+  "created_at": {
+    "$date": "2025-05-11T19:15:01.379Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-14T13:19:31.781Z"
+  },
+  "matricule": "PLAN113823KBU"
+},
+{
+  "_id": {
+    "$oid": "6822fa3c1c09310cd0ad2989"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "68149cea034d9297d64651fc"
+  ],
+  "poll": "681df8b6a742536ac19d0201",
+  "room": "6822d5e11c09310cd0ad2985",
+  "period": "09:00",
+  "date": "2025-05-13",
+  "consultation_number": "10",
+  "consultation_time": "30",
+  "comment": "ras",
+  "status": "Plus disponible",
+  "created_at": {
+    "$date": "2025-05-13T09:52:28.141Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-14T13:19:31.866Z"
+  },
+  "matricule": "PLAN860407LJX"
+},
+{
+  "_id": {
+    "$oid": "6823092d1c09310cd0ad298a"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "6822d17e1c09310cd0ad2979"
+  ],
+  "poll": "681e0d9a03003ad7c9425113",
+  "room": "6822d5ef1c09310cd0ad2986",
+  "period": "13:30",
+  "date": "2025-05-15",
+  "consultation_number": "5",
+  "consultation_time": "20",
+  "comment": "ras",
+  "status": "Annulé",
+  "created_at": {
+    "$date": "2025-05-13T10:56:13.784Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-14T13:37:44.292Z"
+  },
+  "matricule": "PLAN649337QXV"
+},
+{
+  "_id": {
+    "$oid": "6824606c8e7d8d90f2cc2352"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "6822d17e1c09310cd0ad2979"
+  ],
+  "poll": "681e0d9a03003ad7c9425113",
+  "room": "6822d5c21c09310cd0ad2984",
+  "period": "10:00",
+  "date": "2025-05-14",
+  "consultation_number": "1",
+  "consultation_time": "90",
+  "comment": "ras",
+  "status": "Annulé",
+  "created_at": {
+    "$date": "2025-05-14T11:20:44.274Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-14T11:23:09.385Z"
+  },
+  "matricule": "PLAN088744XQZ"
+},
+{
+  "_id": {
+    "$oid": "682477cdedc5c50971927f6e"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "6822f95a1c09310cd0ad2988"
+  ],
+  "poll": "681e0023076a3d5863bcec12",
+  "room": "6822d61a1c09310cd0ad2987",
+  "period": "12:00",
+  "date": "2025-05-15",
+  "consultation_number": "3",
+  "consultation_time": "60",
+  "comment": "ras",
+  "status": "Annulé",
+  "created_at": {
+    "$date": "2025-05-14T13:00:29.025Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-14T13:37:43.074Z"
+  },
+  "matricule": "PLAN432868KUR"
+},
+{
+  "_id": {
+    "$oid": "68247a3dedc5c50971927f6f"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "6822f95a1c09310cd0ad2988"
+  ],
+  "poll": "681e0d9a03003ad7c9425113",
+  "room": "68176029cf6740c9f658450f",
+  "period": "14:00",
+  "date": "2025-05-15",
+  "consultation_number": "2",
+  "consultation_time": "30",
+  "comment": "ras",
+  "status": "Annulé",
+  "created_at": {
+    "$date": "2025-05-14T13:10:53.084Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-14T13:36:05.683Z"
+  },
+  "matricule": "PLAN032455JHT"
+},
+{
+  "_id": {
+    "$oid": "6824811dedc5c50971927f70"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "6822d1281c09310cd0ad2978"
+  ],
+  "poll": "681df8b6a742536ac19d0201",
+  "room": "68176029cf6740c9f658450f",
+  "period": "09:00",
+  "date": "2025-05-16",
+  "consultation_number": "15",
+  "consultation_time": "20",
+  "comment": "ras",
+  "status": "Annulé",
+  "created_at": {
+    "$date": "2025-05-14T13:40:13.366Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-14T14:04:48.290Z"
+  },
+  "matricule": "PLAN442294ZMN"
+},
+{
+  "_id": {
+    "$oid": "6824876cedc5c50971927f71"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "6822d17e1c09310cd0ad2979"
+  ],
+  "poll": "681e0023076a3d5863bcec12",
+  "room": "6822d61a1c09310cd0ad2987",
+  "period": "12:00",
+  "date": "2025-05-19",
+  "consultation_number": "12",
+  "consultation_time": "30",
+  "comment": "ras",
+  "status": "Plus disponible",
+  "created_at": {
+    "$date": "2025-05-14T14:07:08.770Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-20T09:48:22.669Z"
+  },
+  "matricule": "PLAN157311IQZ"
+},
+{
+  "_id": {
+    "$oid": "682c73f927dc4a936ea9b927"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "68149cea034d9297d64651fc"
+  ],
+  "poll": "681e0023076a3d5863bcec12",
+  "room": "6822d5c21c09310cd0ad2984",
+  "period": "09:00",
+  "date": "2025-05-21",
+  "consultation_number": "5",
+  "consultation_time": "45",
+  "comment": "ras",
+  "status": "Plus disponible",
+  "created_at": {
+    "$date": "2025-05-20T14:22:17.513Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-22T10:06:25.029Z"
+  },
+  "matricule": "PLAN624105KSY"
+},
+{
+  "_id": {
+    "$oid": "682d9ed2b3d9aba835cc6a4b"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "6822d1281c09310cd0ad2978"
+  ],
+  "poll": "681e0d9a03003ad7c9425113",
+  "room": "681df938a742536ac19d0202",
+  "period": "10:00",
+  "date": "2025-05-23",
+  "consultation_number": "2",
+  "consultation_time": "20",
+  "comment": "ras",
+  "status": "Refusé",
+  "created_at": {
+    "$date": "2025-05-21T11:37:22.581Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-21T12:48:58.014Z"
+  },
+  "matricule": "PLAN564995AKX"
+},
+{
+  "_id": {
+    "$oid": "682d9f17b3d9aba835cc6a4c"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "6822d17e1c09310cd0ad2979"
+  ],
+  "poll": "681df8b6a742536ac19d0201",
+  "room": "6822d61a1c09310cd0ad2987",
+  "period": "14:00",
+  "date": "2025-05-22",
+  "consultation_number": "4",
+  "consultation_time": "30",
+  "comment": "ras",
+  "status": "Plus disponible",
+  "created_at": {
+    "$date": "2025-05-21T11:38:31.176Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-23T09:59:14.854Z"
+  },
+  "matricule": "PLAN954992ZRW"
+},
+{
+  "_id": {
+    "$oid": "683448b3902376618bd8e1fc"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "68149cea034d9297d64651fc"
+  ],
+  "poll": "681df8b6a742536ac19d0201",
+  "room": "68176029cf6740c9f658450f",
+  "period": "11:00",
+  "date": "2025-05-26",
+  "consultation_number": "5",
+  "consultation_time": "30",
+  "comment": "ras",
+  "status": "Plus disponible",
+  "created_at": {
+    "$date": "2025-05-26T12:55:47.188Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-27T13:34:20.356Z"
+  },
+  "matricule": "PLAN577031VTW"
+},
+{
+  "_id": {
+    "$oid": "6836ef6b55975b63bc075e54"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "68149cea034d9297d64651fc"
+  ],
+  "poll": "681e0023076a3d5863bcec12",
+  "room": "681df938a742536ac19d0202",
+  "period": "14:00",
+  "date": "2025-05-29",
+  "consultation_number": "6",
+  "consultation_time": "45",
+  "comment": "ras",
+  "status": "Plus disponible",
+  "created_at": {
+    "$date": "2025-05-28T13:11:39.573Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-13T13:53:48.778Z"
+  },
+  "matricule": "PLAN411716NDH"
+},
+{
+  "_id": {
+    "$oid": "684c0ffc5589d354d1dbe246"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "68149cea034d9297d64651fc"
+  ],
+  "poll": "682c74f027dc4a936ea9b928",
+  "room": "68176029cf6740c9f658450f",
+  "period": "09:00",
+  "date": "2025-06-16",
+  "consultation_number": "3",
+  "consultation_time": "20",
+  "comment": "ras",
+  "status": "Plus disponible",
+  "created_at": {
+    "$date": "2025-06-13T13:48:12.139Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-19T14:46:47.335Z"
+  },
+  "matricule": "PLAN075859KYM"
+},
+{
+  "_id": {
+    "$oid": "6854197ac3c4eed16437b9e4"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "6822d2c51c09310cd0ad297e"
+  ],
+  "poll": "681e0d9a03003ad7c9425113",
+  "room": "6822d5e11c09310cd0ad2985",
+  "period": "10:00",
+  "date": "2025-06-20",
+  "consultation_number": "32",
+  "consultation_time": "25",
+  "comment": "ras",
+  "status": "Refusé",
+  "created_at": {
+    "$date": "2025-06-19T16:06:50.090Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-19T16:17:05.873Z"
+  },
+  "matricule": "PLAN540010HSI"
+},
+{
+  "_id": {
+    "$oid": "6854199dc3c4eed16437b9e5"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "68149cea034d9297d64651fc"
+  ],
+  "poll": "681e0d9a03003ad7c9425113",
+  "room": "6822d5ef1c09310cd0ad2986",
+  "period": "09:00",
+  "date": "2025-06-19",
+  "consultation_number": "5",
+  "consultation_time": "28",
+  "comment": "jzyhej",
+  "status": "Plus disponible",
+  "created_at": {
+    "$date": "2025-06-19T16:07:25.058Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-23T08:21:13.601Z"
+  },
+  "matricule": "PLAN324094MBI"
+},
+{
+  "_id": {
+    "$oid": "6858f24f383689a010e416f1"
+  },
+  "staff_id": "68149d24034d9297d64651fd",
+  "doctors_id": [
+    "68149cea034d9297d64651fc"
+  ],
+  "poll": "681e0d9a03003ad7c9425113",
+  "room": "6822d5e11c09310cd0ad2985",
+  "period": "09:00",
+  "date": "2025-06-24",
+  "consultation_number": "10",
+  "consultation_time": "25",
+  "comment": "ras",
+  "status": "Réservé",
+  "created_at": {
+    "$date": "2025-06-23T08:21:03.748Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-23T08:24:40.381Z"
+  },
+  "matricule": "PLAN396245CRB"
+}]

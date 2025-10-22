@@ -1,0 +1,369 @@
+<div class="dashboard-container p-4 md:p-6 ml-[var(--sidebar-width)] transition-all duration-300">
+    <h1 class="dashboard-title text-2xl md:text-3xl font-bold mb-6">Planning Box</h1>
+    <p-toast></p-toast>
+    
+    <!-- Contrôles combinés sur une seule ligne -->
+    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-6">
+        <!-- Contrôles de semaine -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 flex-1 min-w-[300px]">
+            <p-calendar 
+                [(ngModel)]="selectedDate" 
+                (onSelect)="filterBoxPlansFromDate($event)" 
+                [showWeek]="true" 
+                dateFormat="dd/mm/yy"
+                placeholder="Sélectionner une date"
+                class="w-full">
+            </p-calendar>
+
+            <p-dropdown 
+                [options]="weeks" 
+                [(ngModel)]="selectedWeek" 
+                optionLabel="label" 
+                (onChange)="onWeekChange()"
+                placeholder="Sélectionner une semaine"
+                class="w-full">
+            </p-dropdown>
+            
+            <button pButton 
+                label="Aujourd'hui" 
+                icon="pi pi-calendar" 
+                (click)="goToToday()"
+                class="p-button-secondary w-full">
+            </button>
+        </div>
+
+        <!-- Champ de recherche unifié -->
+        <div class="flex-1">
+            <span class="p-float-label w-full">
+                <input pInputText id="globalFilter" [(ngModel)]="globalFilter" 
+                    (input)="applyFilters()" class="w-full" placeholder="Rechercher salle ou médecin">
+            </span>
+        </div>
+
+        <!-- Boutons d'actions -->
+        <div class="flex items-center gap-2 justify-end">
+            <button pButton 
+                icon="pi pi-filter-slash" 
+                pTooltip="Réinitialiser les filtres"
+                (click)="resetFilters()"
+                class="p-button-outlined">
+            </button>
+            
+            <button pButton 
+                icon="pi pi-print" 
+                pTooltip="Imprimer le planning"
+                (click)="exportToPdf()"
+                class="p-button-help">
+            </button>
+            
+            <button pButton 
+                icon="pi pi-upload" 
+                pTooltip="Importer un planning"
+                (click)="showUploadDialog()"
+                class="p-button-success">
+                <span class="hidden lg:inline">Importer</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Dialog pour l'upload -->
+    <p-dialog header="Importer un planning" [(visible)]="displayUploadDialog" [style]="{width: '50vw'}">
+        <p-fileUpload name="planningFile" 
+                     url="/api/upload" 
+                     (onUpload)="onUpload($event)"
+                     accept=".xlsx,.csv"
+                     maxFileSize="1000000">
+            <ng-template pTemplate="content">
+                <i class="pi pi-file-excel p-5" style="font-size: 5rem; color: var(--green-500)"></i>
+                <p class="m-0">Glissez-déposez le fichier Excel ici ou cliquez pour parcourir</p>
+            </ng-template>
+        </p-fileUpload>
+    </p-dialog>
+    
+    <!-- Utilisation de p-tabView pour les pôles -->
+    <div id="planning-to-print" class="relative w-full shadow-md sm:rounded-lg">
+        <p-tabView [(activeIndex)]="activeTabIndex">
+            <p-tabPanel *ngFor="let pole of filteredPrograms; let i = index" [header]="pole.poleName">
+
+                <!-- Nouvelle section pour les spécialités -->
+                <div class="pole-specialities mb-4 p-3">
+                  <span class="font-semibold">Spécialités : </span>
+                  <span *ngIf="getPoleSpecialities(pole.poleId).length > 0; else noSpecialities">
+                      {{ getPoleSpecialities(pole.poleId).join(' -- ') }}
+                  </span>
+                  <ng-template #noSpecialities>
+                      <span class="text-gray-500">Aucune spécialité définie</span>
+                  </ng-template>
+                </div>
+                <div class="mt-5">
+                    <p-table 
+                        [value]="pole.data" 
+                        [scrollable]="true"
+                        scrollHeight="600px"
+                        [tableStyle]="{ 'min-width': '100%' }"
+                        styleClass="p-datatable-sm w-full"
+                        showGridlines>
+                        
+                        <ng-template pTemplate="header">
+                          <tr>
+                              <th rowspan="2">Salle</th>
+                              <th rowspan="2"></th>
+                              <!-- 5 jours x 5 colonnes = 25 colonnes -->
+                              <th colspan="5">Lundi</th>
+                              <th colspan="5">Mardi</th>
+                              <th colspan="5">Mercredi</th>
+                              <th colspan="5">Jeudi</th>
+                              <th colspan="5">Vendredi</th>
+                          </tr>
+                          <tr>
+                              <!-- Répéter pour chaque jour (5x) -->
+                              <th>Info</th>
+                              <th>Statut</th>
+                              <th>Pas CS</th>
+                              <th>Nbre CS</th>
+                              <th>Nbre Med</th>
+                              
+                              <th>Info</th>
+                              <th>Statut</th>
+                              <th>Pas CS</th>
+                              <th>Nbre CS</th>
+                              <th>Nbre Med</th>
+                              
+                              <th>Info</th>
+                              <th>Statut</th>
+                              <th>Pas CS</th>
+                              <th>Nbre CS</th>
+                              <th>Nbre Med</th>
+                              
+                              <th>Info</th>
+                              <th>Statut</th>
+                              <th>Pas CS</th>
+                              <th>Nbre CS</th>
+                              <th>Nbre Med</th>
+                              
+                              <th>Info</th>
+                              <th>Statut</th>
+                              <th>Pas CS</th>
+                              <th>Nbre CS</th>
+                              <th>Nbre Med</th>
+                          </tr>
+                      </ng-template>
+                      
+                      <ng-template pTemplate="body" let-program>
+                          <!-- Ligne Matin -->
+                          <tr>
+                              <td rowspan="2">{{program.nom_salle}}</td>
+                              <td>Matin</td>
+                              
+                              <!-- Lundi Matin -->
+                              <td>
+                                  <div *ngIf="program.data.matin.lundi.doctorsInfo">
+                                      <div *ngFor="let info of program.data.matin.lundi.doctorsInfo">
+                                          {{info.name}} ({{info.time}}-{{info.endTime}})
+                                      </div>
+                                  </div>
+                              </td>
+                              <td [ngClass]="{
+                                'bg-green-100': program.data.matin.lundi.message === 'Disponible', 
+                                'bg-yellow-100': program.data.matin.lundi.message === 'Réservé',
+                                'bg-red-100': program.data.matin.lundi.message === 'Annulé',
+                                'bg-red-200': program.data.matin.lundi.message === 'Refusé',
+                                'bg-gray-100': program.data.matin.lundi.message === 'Plus disponible'}">
+                                  {{program.data.matin.lundi.message}}
+                              </td>
+                              <td>{{program.data.matin.lundi['pas cs']}}</td>
+                              <td>{{program.data.matin.lundi['nbre cs']}}</td>
+                              <td>{{program.data.matin.lundi['nbe med']}}</td>
+                              
+                              <!-- Mardi Matin -->
+                              <td>
+                                  <div *ngIf="program.data.matin.mardi.doctorsInfo">
+                                      <div *ngFor="let info of program.data.matin.mardi.doctorsInfo">
+                                          {{info.name}} ({{info.time}}-{{info.endTime}})
+                                      </div>
+                                  </div>
+                              </td>
+                              <td [ngClass]="{
+                                'bg-green-100': program.data.matin.mardi.message === 'Disponible', 
+                                'bg-yellow-100': program.data.matin.mardi.message === 'Réservé',
+                                'bg-red-100': program.data.matin.mardi.message === 'Annulé',
+                                'bg-red-200': program.data.matin.mardi.message === 'Refusé',
+                                'bg-gray-100': program.data.matin.mardi.message === 'Plus disponible'}">
+                                  {{program.data.matin.mardi.message}}
+                              </td>
+                              <td>{{program.data.matin.mardi['pas cs']}}</td>
+                              <td>{{program.data.matin.mardi['nbre cs']}}</td>
+                              <td>{{program.data.matin.mardi['nbe med']}}</td>
+                              
+                              <!-- Mercredi Matin -->
+                              <td>
+                                  <div *ngIf="program.data.matin.mercredi.doctorsInfo">
+                                      <div *ngFor="let info of program.data.matin.mercredi.doctorsInfo">
+                                          {{info.name}} ({{info.time}}-{{info.endTime}})
+                                      </div>
+                                  </div>
+                              </td>
+                              <td [ngClass]="{
+                                'bg-green-100': program.data.matin.mercredi.message === 'Disponible', 
+                                'bg-yellow-100': program.data.matin.mercredi.message === 'Réservé',
+                                'bg-red-100': program.data.matin.mercredi.message === 'Annulé',
+                                'bg-red-200': program.data.matin.mercredi.message === 'Refusé',
+                                'bg-gray-100': program.data.matin.mercredi.message === 'Plus disponible'}">
+                                  {{program.data.matin.mercredi.message}}
+                              </td>
+                              <td>{{program.data.matin.mercredi['pas cs']}}</td>
+                              <td>{{program.data.matin.mercredi['nbre cs']}}</td>
+                              <td>{{program.data.matin.mercredi['nbe med']}}</td>
+                              
+                              <!-- Jeudi Matin -->
+                              <td>
+                                  <div *ngIf="program.data.matin.jeudi.doctorsInfo">
+                                      <div *ngFor="let info of program.data.matin.jeudi.doctorsInfo">
+                                          {{info.name}} ({{info.time}}-{{info.endTime}})
+                                      </div>
+                                  </div>
+                              </td>
+                              <td [ngClass]="{
+                                'bg-green-100': program.data.matin.jeudi.message === 'Disponible', 
+                                'bg-yellow-100': program.data.matin.jeudi.message === 'Réservé',
+                                'bg-red-100': program.data.matin.jeudi.message === 'Annulé',
+                                'bg-red-200': program.data.matin.jeudi.message === 'Refusé',
+                                'bg-gray-100': program.data.matin.jeudi.message === 'Plus disponible'}">
+                                  {{program.data.matin.jeudi.message}}
+                              </td>
+                              <td>{{program.data.matin.jeudi['pas cs']}}</td>
+                              <td>{{program.data.matin.jeudi['nbre cs']}}</td>
+                              <td>{{program.data.matin.jeudi['nbe med']}}</td>
+                              
+                              <!-- Vendredi Matin -->
+                              <td>
+                                  <div *ngIf="program.data.matin.vendredi.doctorsInfo">
+                                      <div *ngFor="let info of program.data.matin.vendredi.doctorsInfo">
+                                          {{info.name}} ({{info.time}}-{{info.endTime}})
+                                      </div>
+                                  </div>
+                              </td>
+                              <td [ngClass]="{
+                                'bg-green-100': program.data.matin.vendredi.message === 'Disponible', 
+                                'bg-yellow-100': program.data.matin.vendredi.message === 'Réservé',
+                                'bg-red-100': program.data.matin.vendredi.message === 'Annulé',
+                                'bg-red-200': program.data.matin.vendredi.message === 'Refusé',
+                                'bg-gray-100': program.data.matin.vendredi.message === 'Plus disponible'}">
+                                  {{program.data.matin.vendredi.message}}
+                              </td>
+                              <td>{{program.data.matin.vendredi['pas cs']}}</td>
+                              <td>{{program.data.matin.vendredi['nbre cs']}}</td>
+                              <td>{{program.data.matin.vendredi['nbe med']}}</td>
+                          </tr>
+                          
+                          <!-- Ligne Après-midi -->
+                          <tr>
+                              <td>AM</td>
+                              
+                              <!-- Lundi AM -->
+                              <td>
+                                  <div *ngIf="program.data.AM.lundi.doctorsInfo">
+                                      <div *ngFor="let info of program.data.AM.lundi.doctorsInfo">
+                                          {{info.name}} ({{info.time}}-{{info.endTime}})
+                                      </div>
+                                  </div>
+                              </td>
+                              <td [ngClass]="{
+                                'bg-green-100': program.data.AM.lundi.message === 'Disponible', 
+                                'bg-yellow-100': program.data.AM.lundi.message === 'Réservé',
+                                'bg-red-100': program.data.AM.lundi.message === 'Annulé',
+                                'bg-red-200': program.data.AM.lundi.message === 'Refusé',
+                                'bg-gray-100': program.data.AM.lundi.message === 'Plus disponible'}">
+                                  {{program.data.AM.lundi.message}}
+                              </td>
+                              <td>{{program.data.AM.lundi['pas cs']}}</td>
+                              <td>{{program.data.AM.lundi['nbre cs']}}</td>
+                              <td>{{program.data.AM.lundi['nbe med']}}</td>
+                              
+                              <!-- Mardi AM -->
+                              <td>
+                                  <div *ngIf="program.data.AM.mardi.doctorsInfo">
+                                      <div *ngFor="let info of program.data.AM.mardi.doctorsInfo">
+                                          {{info.name}} ({{info.time}}-{{info.endTime}})
+                                      </div>
+                                  </div>
+                              </td>
+                              <td [ngClass]="{
+                                'bg-green-100': program.data.AM.mardi.message === 'Disponible', 
+                                'bg-yellow-100': program.data.AM.mardi.message === 'Réservé',
+                                'bg-red-100': program.data.AM.mardi.message === 'Annulé',
+                                'bg-red-200': program.data.AM.mardi.message === 'Refusé',
+                                'bg-gray-100': program.data.AM.mardi.message === 'Plus disponible'}">
+                                  {{program.data.AM.mardi.message}}
+                              </td>
+                              <td>{{program.data.AM.mardi['pas cs']}}</td>
+                              <td>{{program.data.AM.mardi['nbre cs']}}</td>
+                              <td>{{program.data.AM.mardi['nbe med']}}</td>
+                              
+                              <!-- Mercredi AM -->
+                              <td>
+                                  <div *ngIf="program.data.AM.mercredi.doctorsInfo">
+                                      <div *ngFor="let info of program.data.AM.mercredi.doctorsInfo">
+                                          {{info.name}} ({{info.time}}-{{info.endTime}})
+                                      </div>
+                                  </div>
+                              </td>
+                              <td [ngClass]="{
+                                'bg-green-100': program.data.AM.mercredi.message === 'Disponible', 
+                                'bg-yellow-100': program.data.AM.mercredi.message === 'Réservé',
+                                'bg-red-100': program.data.AM.mercredi.message === 'Annulé',
+                                'bg-red-200': program.data.AM.mercredi.message === 'Refusé',
+                                'bg-gray-100': program.data.AM.mercredi.message === 'Plus disponible'}">
+                                  {{program.data.AM.mercredi.message}}
+                              </td>
+                              <td>{{program.data.AM.mercredi['pas cs']}}</td>
+                              <td>{{program.data.AM.mercredi['nbre cs']}}</td>
+                              <td>{{program.data.AM.mercredi['nbe med']}}</td>
+                              
+                              <!-- Jeudi AM -->
+                              <td>
+                                  <div *ngIf="program.data.AM.jeudi.doctorsInfo">
+                                      <div *ngFor="let info of program.data.AM.jeudi.doctorsInfo">
+                                          {{info.name}} ({{info.time}}-{{info.endTime}})
+                                      </div>
+                                  </div>
+                              </td>
+                              <td [ngClass]="{
+                                'bg-green-100': program.data.AM.jeudi.message === 'Disponible', 
+                                'bg-yellow-100': program.data.AM.jeudi.message === 'Réservé',
+                                'bg-red-100': program.data.AM.jeudi.message === 'Annulé',
+                                'bg-red-200': program.data.AM.jeudi.message === 'Refusé',
+                                'bg-gray-100': program.data.AM.jeudi.message === 'Plus disponible'}">
+                                  {{program.data.AM.jeudi.message}}
+                              </td>
+                              <td>{{program.data.AM.jeudi['pas cs']}}</td>
+                              <td>{{program.data.AM.jeudi['nbre cs']}}</td>
+                              <td>{{program.data.AM.jeudi['nbe med']}}</td>
+                              
+                              <!-- Vendredi AM -->
+                              <td>
+                                  <div *ngIf="program.data.AM.vendredi.doctorsInfo">
+                                      <div *ngFor="let info of program.data.AM.vendredi.doctorsInfo">
+                                          {{info.name}} ({{info.time}}-{{info.endTime}})
+                                      </div>
+                                  </div>
+                              </td>
+                              <td [ngClass]="{
+                                'bg-green-100': program.data.AM.vendredi.message === 'Disponible', 
+                                'bg-yellow-100': program.data.AM.vendredi.message === 'Réservé',
+                                'bg-red-100': program.data.AM.vendredi.message === 'Annulé',
+                                'bg-red-200': program.data.AM.vendredi.message === 'Refusé',
+                                'bg-gray-100': program.data.AM.vendredi.message === 'Plus disponible'}">
+                                  {{program.data.AM.vendredi.message}}
+                              </td>
+                              <td>{{program.data.AM.vendredi['pas cs']}}</td>
+                              <td>{{program.data.AM.vendredi['nbre cs']}}</td>
+                              <td>{{program.data.AM.vendredi['nbe med']}}</td>
+                          </tr>
+                      </ng-template>
+                    </p-table>
+                </div>
+            </p-tabPanel>
+        </p-tabView>
+    </div>
+</div>

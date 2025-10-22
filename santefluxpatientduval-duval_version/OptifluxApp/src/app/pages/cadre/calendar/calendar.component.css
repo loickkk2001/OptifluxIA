@@ -1,0 +1,9 @@
+:host ::ng-deep .fc-event {
+  background-color: transparent; /* Fond transparent pour l'événement global */
+  border: none; /* Supprimer les bordures par défaut */
+  padding: 4px;
+}
+
+:host ::ng-deep .fc-event-content {
+  font-size: 0.9em;
+}

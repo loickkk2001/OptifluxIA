@@ -1,0 +1,311 @@
+<div class="dashboard-container p-4 md:p-6">
+  <h1 class="dashboard-title text-2xl md:text-3xl font-bold mb-6">Mes Demandes</h1>
+  <p-toast></p-toast>
+  <p-tabView>
+    <!-- <p-tabPanel>
+      <ng-template pTemplate="header">
+        <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Demandes absences reçues</button>
+      </ng-template>
+      <div class="table-container overflow-x-auto" style="border-radius: 0.75rem;">
+        <p-table
+          [value]="requests"
+          [columns]="cols"
+          [tableStyle]="{ 'min-width': '100%' }"
+          responsiveLayout="scroll"
+          class="w-full"
+        >
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th *ngFor="let col of columns" class="table-header p-3 text-left bg-gray-100 font-medium" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">
+                {{ col }}
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-request>
+            <tr class="table-row hover:bg-gray-50">
+              <td class="p-3 border-b">{{ request.matricule }}</td>
+              <td class="p-3 border-b">{{ request.nom }}</td>
+              <td class="p-3 border-b">{{ request.dateDebut }}</td>
+              <td class="p-3 border-b">{{ request.dateFin }}</td>
+              <td class="p-3 border-b">{{ request.heure }}</td>
+              <td class="p-3 border-b">{{ request.service }}</td>
+              <td class="p-3 border-b">
+                <button
+                  class="action-square mr-3"
+                  [ngClass]="{
+                    'bg-green-100 text-green-500 hover:bg-green-200 hover:text-green-700': request.status === 'En cours',
+                    'bg-gray-100 text-gray-400 cursor-not-allowed': request.status !== 'En cours'
+                  }"
+                  title="Accepter"
+                  (click)="request.status === 'En cours' ? acceptRequest(request.id, request.replacementId) : null"
+                  [disabled]="request.status !== 'En cours'"
+                >
+                  <i class="pi pi-check-circle"></i>
+                </button>
+                
+                
+                <button
+                  class="action-square"
+                  [ngClass]="{
+                    'bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-700': request.status === 'En cours',
+                    'bg-gray-100 text-gray-400 cursor-not-allowed': request.status !== 'En cours'
+                  }"
+                  title="Refuser"
+                  (click)="request.status === 'En cours' ? refuseRequest(request.id, request.replacementId) : null"
+                  [disabled]="request.status !== 'En cours'"
+                >
+                  <i class="pi pi-times-circle"></i>
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel>
+      <ng-template pTemplate="header">
+        <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Historique des demandes absences</button>
+      </ng-template>
+      <div class="table-container overflow-x-auto" style="border-radius: 0.75rem;">
+        <p-table
+          [value]="requests3"
+          [columns]="cols1"
+          [tableStyle]="{ 'min-width': '100%' }"
+          responsiveLayout="scroll"
+          class="w-full"
+        >
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th *ngFor="let col of columns" class="table-header p-3 text-left bg-gray-100 font-medium" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">
+                {{ col }}
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-request>
+            <tr class="table-row hover:bg-gray-50">
+              <td class="p-3 border-b">{{ request.matricule }}</td>
+              <td class="p-3 border-b">{{ request.nom }}</td>
+              <td class="p-3 border-b">{{ request.dateDebut }}</td>
+              <td class="p-3 border-b">{{ request.dateFin }}</td>
+              <td class="p-3 border-b">{{ request.heure }}</td>
+              <td class="p-3 border-b">{{ request.service }}</td>
+              <td class="p-3 border-b">
+                <p-badge
+                  [value]="request.status"
+                  [severity]="getBadgeSeverity(request.status)"
+                  styleClass="p-mr-2"
+                ></p-badge>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-tabPanel>
+
+    
+    <p-tabPanel>
+      <ng-template pTemplate="header">
+        <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Demandes absences envoyées</button>
+      </ng-template>
+      <div class="table-container overflow-x-auto" style="border-radius: 0.75rem;">
+        <p-table
+          [value]="requests2"
+          [columns]="cols2"
+          [tableStyle]="{ 'min-width': '100%' }"
+          responsiveLayout="scroll"
+          class="w-full"
+        >
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th *ngFor="let col of columns" class="table-header p-3 text-left bg-gray-100 font-medium" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">
+                {{ col }}
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-request>
+            <tr class="table-row hover:bg-gray-50">
+              <td class="p-3 border-b">{{ request.matricule }}</td>
+              <td class="p-3 border-b">{{ request.nom }}</td>
+              <td class="p-3 border-b">{{ request.dateDemande }}</td>
+              <td class="p-3 border-b">{{ request.dateDebut }}</td>
+              <td class="p-3 border-b">{{ request.dateFin }}</td>
+              <td class="p-3 border-b">{{ request.service }}</td>
+              <td class="p-3 border-b">
+                <p-badge
+                  [value]="request.status"
+                  [severity]="getBadgeSeverity(request.status)"
+                  styleClass="p-mr-2"
+                ></p-badge>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-tabPanel>-->
+
+
+    <p-tabPanel>
+      <ng-template pTemplate="header">
+        <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Reservations en cours</button>
+      </ng-template>
+
+      
+      <div class="flex flex-col md:flex-row gap-4 mb-6">
+        <div class="flex-1">
+          <span class="p-input-icon-left w-full">
+            <input pInputText type="text" [(ngModel)]="searchTerm" 
+                   (input)="applyFilter()" 
+                   placeholder="  Rechercher par matricule, médecin, pôle ou salle..."
+                   class="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-11">
+          </span>
+        </div>
+        <div class="w-full md:w-64">
+          <p-dropdown [options]="statusOptions" [(ngModel)]="selectedStatus" 
+                      optionLabel="label" optionValue="value" (onChange)="applyFilter()"
+                      [showClear]="true" placeholder="Filtrer par statut"
+                      styleClass="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-11">
+          </p-dropdown>
+        </div>
+      </div>
+
+      <div class="table-container overflow-x-auto" style="border-radius: 0.75rem;">
+        <p-table
+          [value]="filteredRequests5"
+          [columns]="cols3"
+          [paginator]="true"
+          [rows]="rows"
+          [totalRecords]="totalRecords"
+          [lazy]="false"
+          (onPage)="onPageChange($event)"
+          [tableStyle]="{ 'min-width': '100%' }"
+          responsiveLayout="scroll"
+          class="w-full"
+        >
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th *ngFor="let col of columns" class="table-header p-3 text-left bg-gray-100 font-medium" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">
+                {{ col }}
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-request>
+            <tr class="table-row hover:bg-gray-50">
+              <td class="p-3 border-b">{{ request.matricule }}</td>
+              <td class="p-3 border-b">{{ request.doctors }}</td>
+              <td class="p-3 border-b">{{ request.pole }}</td>
+              <td class="p-3 border-b">{{ request.room }}</td>
+              <td class="p-3 border-b">{{ request.date }}</td>
+              <td class="p-3 border-b">{{ request.period }}</td>
+              <td class="p-3 border-b">{{ request.consultation_number }}</td>
+              <td class="p-3 border-b">{{ request.consultation_time }}</td>
+              <td class="p-3 border-b">
+                <p-badge
+                  [value]="request.status"
+                  [severity]="getBadgeSeverity(request.status)"
+                  styleClass="p-mr-2"
+                ></p-badge>
+              </td>
+              <td class="p-3 border-b">
+                <!--<button
+                  class="action-square"
+                  [ngClass]="{
+                    'bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-700': request.status === 'Réservé',
+                    'bg-gray-100 text-gray-400 cursor-not-allowed': request.status !== 'Réservé'
+                  }"
+                  title="Annulée"
+                  (click)="request.status === 'Réservé' ? cancelRequest(request.id) : null"
+                  [disabled]="request.status !== 'Réservé'"
+                >
+                  Annuler
+                </button>-->
+                <p-button label="Annuler" severity="danger" (click)="request.status === 'Réservé' ? cancelRequest(request.id) : null" styleClass="p-button-sm rounded-lg"/>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td [colSpan]="filteredRequests5.length" class="text-center py-4 justify-center">
+                Aucune absence
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-tabPanel>
+    
+    <p-tabPanel>
+      <ng-template pTemplate="header">
+        <button class="tab-button bg-blue-500 text-white hover:bg-blue-600">Historique des reservations</button>
+      </ng-template>
+
+      
+      <div class="flex flex-col md:flex-row gap-4 mb-6">
+        <div class="flex-1">
+          <span class="p-input-icon-left w-full">
+            <input pInputText type="text" [(ngModel)]="searchTerm" 
+                   (input)="applyFilter()" 
+                   placeholder="  Rechercher par matricule, médecin, pôle ou salle..."
+                   class="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-11">
+          </span>
+        </div>
+        <div class="w-full md:w-64">
+          <p-dropdown [options]="statusOptions" [(ngModel)]="selectedStatus" 
+                      optionLabel="label" optionValue="value" (onChange)="applyFilter()"
+                      [showClear]="true" placeholder="Filtrer par statut"
+                      styleClass="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-11">
+          </p-dropdown>
+        </div>
+      </div>
+
+      <div class="table-container overflow-x-auto" style="border-radius: 0.75rem;">
+        <p-table
+          [value]="filteredRequests4"
+          [columns]="cols4"
+          [paginator]="true"
+          [rows]="rows"
+          [totalRecords]="totalRecords"
+          [lazy]="false"
+          (onPage)="onPageChange($event)"
+          [tableStyle]="{ 'min-width': '100%' }"
+          responsiveLayout="scroll"
+          class="w-full"
+        >
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th *ngFor="let col of columns" class="table-header p-3 text-left bg-gray-100 font-medium" style="background-color: #e5e7eb; padding: 1rem; font-weight: 600; color: #374151">
+                {{ col }}
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-request>
+            <tr class="table-row hover:bg-gray-50">
+              <td class="p-3 border-b">{{ request.matricule }}</td>
+              <td class="p-3 border-b">{{ request.doctors }}</td>
+              <td class="p-3 border-b">{{ request.pole }}</td>
+              <td class="p-3 border-b">{{ request.room }}</td>
+              <td class="p-3 border-b">{{ request.date }}</td>
+              <td class="p-3 border-b">{{ request.period }}</td>
+              <td class="p-3 border-b">{{ request.consultation_number }}</td>
+              <td class="p-3 border-b">{{ request.consultation_time }}</td>
+              <td class="p-3 border-b">
+                <p-badge
+                  [value]="request.status"
+                  [severity]="getBadgeSeverity(request.status)"
+                  styleClass="p-mr-2"
+                ></p-badge>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td [colSpan]="filteredRequests4.length" class="text-center py-4 justify-center">
+                Aucune absence aujourd'hui
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>

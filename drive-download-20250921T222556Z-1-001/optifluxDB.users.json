@@ -1,0 +1,260 @@
+[{
+  "_id": {
+    "$oid": "68149cea034d9297d64651fc"
+  },
+  "first_name": "john",
+  "last_name": "steve",
+  "phoneNumber": "6857452698",
+  "email": "john@gmail.com",
+  "password": "12345678",
+  "role": "cadre",
+  "logged_in": false,
+  "service_id": "681655abac77b52b195385b1",
+  "created_at": {
+    "$date": "2025-05-02T12:22:34.812Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-02T12:24:34.706Z"
+  },
+  "matricule": "CAD454739BUOH"
+},
+{
+  "_id": {
+    "$oid": "68149d24034d9297d64651fd"
+  },
+  "first_name": "jenny",
+  "last_name": "aymard",
+  "phoneNumber": "3586489752",
+  "email": "jenny@gmail.com",
+  "password": "12345678",
+  "role": "nurse",
+  "logged_in": false,
+  "service_id": "68149d4e034d9297d64651fe",
+  "created_at": {
+    "$date": "2025-05-02T12:23:32.265Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-02T12:24:28.597Z"
+  },
+  "matricule": "INF573746BCGD"
+},
+{
+  "_id": {
+    "$oid": "6822d0ec1c09310cd0ad2977"
+  },
+  "first_name": "Constyl",
+  "last_name": "Duval",
+  "phoneNumber": "7568948324",
+  "email": "constyl@gmail.com",
+  "password": "12345678",
+  "role": "admin",
+  "logged_in": false,
+  "service_id": "681655abac77b52b195385b1",
+  "created_at": {
+    "$date": "2025-05-13T06:56:12.263Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T08:30:35.075Z"
+  },
+  "matricule": "ADM892702DAXA"
+},
+{
+  "_id": {
+    "$oid": "6822d1281c09310cd0ad2978"
+  },
+  "first_name": "Ivy",
+  "last_name": "La fortune",
+  "phoneNumber": "4586789524",
+  "email": "ivy@gmail.com",
+  "password": "12345678",
+  "role": "cadre",
+  "logged_in": false,
+  "service_id": "68149d4e034d9297d64651fe",
+  "created_at": {
+    "$date": "2025-05-13T06:57:12.329Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T08:32:18.746Z"
+  },
+  "matricule": "CAD659598SJFA"
+},
+{
+  "_id": {
+    "$oid": "6822d17e1c09310cd0ad2979"
+  },
+  "first_name": "Chantal",
+  "last_name": "Iris",
+  "phoneNumber": "4758695234",
+  "email": "chantal@gmail.com",
+  "password": "12345678",
+  "role": "doctor",
+  "logged_in": false,
+  "service_id": "6822d3571c09310cd0ad297f",
+  "created_at": {
+    "$date": "2025-05-13T06:58:38.468Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-24T18:00:59.147Z"
+  },
+  "matricule": "CAD465367ISLV"
+},
+{
+  "_id": {
+    "$oid": "6822d1b81c09310cd0ad297a"
+  },
+  "first_name": "Phil",
+  "last_name": "Georges",
+  "phoneNumber": "1257896534",
+  "email": "phil@gmail.com",
+  "password": "12345678",
+  "role": "nurse",
+  "logged_in": false,
+  "service_id": "681655abac77b52b195385b1",
+  "created_at": {
+    "$date": "2025-05-13T06:59:36.908Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T08:30:58.792Z"
+  },
+  "matricule": "INF557877KBNW"
+},
+{
+  "_id": {
+    "$oid": "6822d1f31c09310cd0ad297b"
+  },
+  "first_name": "Davis",
+  "last_name": "Bryan",
+  "phoneNumber": "6589647582",
+  "email": "davis@gmail.com",
+  "password": "12345678",
+  "role": "nurse",
+  "logged_in": false,
+  "service_id": "6822d3571c09310cd0ad297f",
+  "created_at": {
+    "$date": "2025-05-13T07:00:35.962Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T08:31:04.762Z"
+  },
+  "matricule": "INF463223JCNR"
+},
+{
+  "_id": {
+    "$oid": "6822d2481c09310cd0ad297c"
+  },
+  "first_name": "Steve",
+  "last_name": "Fameni",
+  "phoneNumber": "3578965478",
+  "email": "steve@gmail.com",
+  "password": "12345678",
+  "role": "nurse",
+  "logged_in": false,
+  "service_id": "68149d4e034d9297d64651fe",
+  "created_at": {
+    "$date": "2025-05-13T07:02:00.617Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T08:31:12.526Z"
+  },
+  "matricule": "INF245239JYDG"
+},
+{
+  "_id": {
+    "$oid": "6822d2821c09310cd0ad297d"
+  },
+  "first_name": "Ralph",
+  "last_name": "Behle",
+  "phoneNumber": "5876954823",
+  "email": "ralph@gmail.com",
+  "password": "12345678",
+  "role": "nurse",
+  "logged_in": false,
+  "service_id": "681655abac77b52b195385b1",
+  "created_at": {
+    "$date": "2025-05-13T07:02:58.006Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T08:31:19.173Z"
+  },
+  "matricule": "INF251224FDKE"
+},
+{
+  "_id": {
+    "$oid": "6822d2c51c09310cd0ad297e"
+  },
+  "first_name": "Thomas",
+  "last_name": "Zimto",
+  "phoneNumber": "2457896547",
+  "email": "thomas@gmail.com",
+  "password": "12345678",
+  "role": "cadre",
+  "logged_in": false,
+  "service_id": "681655abac77b52b195385b1",
+  "created_at": {
+    "$date": "2025-05-13T07:04:05.324Z"
+  },
+  "updated_at": {
+    "$date": "2025-06-23T08:16:39.060Z"
+  },
+  "matricule": "INF511990YQXP"
+},
+{
+  "_id": {
+    "$oid": "6822f95a1c09310cd0ad2988"
+  },
+  "first_name": "tom",
+  "last_name": "toto",
+  "phoneNumber": "4578964854",
+  "email": "toto@gmail.com",
+  "password": "12345678",
+  "role": "cadre",
+  "logged_in": false,
+  "service_id": null,
+  "created_at": {
+    "$date": "2025-05-13T09:48:42.305Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T09:48:42.305Z"
+  },
+  "matricule": "CAD492390TCAE"
+},
+{
+  "_id": {
+    "$oid": "6831ecd5902376618bd8e1fa"
+  },
+  "first_name": "Paul",
+  "last_name": "Taf",
+  "phoneNumber": "4586325897",
+  "email": "paul@gmail.com",
+  "password": "12345678",
+  "role": "doctor",
+  "logged_in": false,
+  "service_id": "68149d4e034d9297d64651fe",
+  "created_at": {
+    "$date": "2025-05-24T17:59:17.626Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-24T17:59:17.626Z"
+  },
+  "matricule": "MED784189WUMK"
+},
+{
+  "_id": {
+    "$oid": "6836eef055975b63bc075e53"
+  },
+  "first_name": "tamo",
+  "last_name": "john",
+  "phoneNumber": "4786586578",
+  "email": "tamo@gmail.com",
+  "password": "12345678",
+  "role": "doctor",
+  "logged_in": false,
+  "service_id": "68149d4e034d9297d64651fe",
+  "created_at": {
+    "$date": "2025-05-28T13:09:36.486Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-28T13:09:36.486Z"
+  },
+  "matricule": "MED337205AAEJ"
+}]

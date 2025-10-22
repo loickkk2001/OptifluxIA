@@ -1,0 +1,117 @@
+[{
+  "_id": {
+    "$oid": "681862e0699fadf01c322cce"
+  },
+  "name": "Médecine générale",
+  "created_at": {
+    "$date": "2025-05-05T09:04:00.393Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:10:40.967Z"
+  },
+  "matricule": "SPE904ZPD"
+},
+{
+  "_id": {
+    "$oid": "681e0d1903003ad7c942510f"
+  },
+  "name": "Gériatrie",
+  "created_at": {
+    "$date": "2025-05-09T16:11:37.188Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:10:56.934Z"
+  },
+  "matricule": "SPE879AVT"
+},
+{
+  "_id": {
+    "$oid": "681e0d2503003ad7c9425110"
+  },
+  "name": "Pédiatrie",
+  "created_at": {
+    "$date": "2025-05-09T16:11:49.605Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:11:10.468Z"
+  },
+  "matricule": "SPE811LCA"
+},
+{
+  "_id": {
+    "$oid": "681e0d3103003ad7c9425111"
+  },
+  "name": "Oncologie",
+  "created_at": {
+    "$date": "2025-05-09T16:12:01.349Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:11:25.306Z"
+  },
+  "matricule": "SPE014CHS"
+},
+{
+  "_id": {
+    "$oid": "681e0d3a03003ad7c9425112"
+  },
+  "name": "Cardiologie",
+  "created_at": {
+    "$date": "2025-05-09T16:12:10.485Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:11:40.071Z"
+  },
+  "matricule": "SPE764IJK"
+},
+{
+  "_id": {
+    "$oid": "6822d4981c09310cd0ad2980"
+  },
+  "name": "Pneumologie",
+  "created_at": {
+    "$date": "2025-05-13T07:11:52.828Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:11:52.828Z"
+  },
+  "matricule": "SPE475WIW"
+},
+{
+  "_id": {
+    "$oid": "6822d4aa1c09310cd0ad2981"
+  },
+  "name": "Neurologie",
+  "created_at": {
+    "$date": "2025-05-13T07:12:10.793Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:12:10.793Z"
+  },
+  "matricule": "SPE760MCJ"
+},
+{
+  "_id": {
+    "$oid": "6822d4bc1c09310cd0ad2982"
+  },
+  "name": "Néphrologie",
+  "created_at": {
+    "$date": "2025-05-13T07:12:28.212Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:12:28.212Z"
+  },
+  "matricule": "SPE099VOK"
+},
+{
+  "_id": {
+    "$oid": "6822d4cd1c09310cd0ad2983"
+  },
+  "name": "Gastro-entérologie",
+  "created_at": {
+    "$date": "2025-05-13T07:12:45.882Z"
+  },
+  "updated_at": {
+    "$date": "2025-05-13T07:12:45.882Z"
+  },
+  "matricule": "SPE636VFO"
+}]

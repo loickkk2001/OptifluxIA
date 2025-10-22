@@ -1,0 +1,239 @@
+[{
+  "_id": {
+    "$oid": "6822e54ddcdf3bdfcbc1a58a"
+  },
+  "user_id": "68149cea034d9297d64651fc",
+  "speciality": "Dermatologie",
+  "contrat_type": "Temps partiel",
+  "contrat_hours": "35",
+  "work_days": [
+    {
+      "day": "Mardi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Jeudi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Vendredi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Samedi",
+      "start_time": "08:00",
+      "end_time": "14:00"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6822e56bdcdf3bdfcbc1a58b"
+  },
+  "user_id": "68149d24034d9297d64651fd",
+  "speciality": "Cardiologie",
+  "contrat_type": "Temps partiel",
+  "contrat_hours": "45",
+  "work_days": [
+    {
+      "day": "Lundi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Jeudi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Samedi",
+      "start_time": "08:00",
+      "end_time": "14:00"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6822e584dcdf3bdfcbc1a58c"
+  },
+  "user_id": "6822d1281c09310cd0ad2978",
+  "speciality": "Cardiologie",
+  "contrat_type": "Temps partiel",
+  "contrat_hours": "25",
+  "work_days": [
+    {
+      "day": "Mardi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Mercredi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Samedi",
+      "start_time": "08:00",
+      "end_time": "14:00"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6822e59bdcdf3bdfcbc1a58d"
+  },
+  "user_id": "6822d17e1c09310cd0ad2979",
+  "speciality": "Pédiatrie",
+  "contrat_type": "Temps partiel",
+  "contrat_hours": "35",
+  "work_days": [
+    {
+      "day": "Mardi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Vendredi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Samedi",
+      "start_time": "08:00",
+      "end_time": "14:00"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6822e5b2dcdf3bdfcbc1a58e"
+  },
+  "user_id": "6822d1b81c09310cd0ad297a",
+  "speciality": "Pédiatrie",
+  "contrat_type": "Temps partiel",
+  "contrat_hours": "35",
+  "work_days": [
+    {
+      "day": "Lundi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Jeudi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Samedi",
+      "start_time": "08:00",
+      "end_time": "14:00"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6822e5d7dcdf3bdfcbc1a58f"
+  },
+  "user_id": "6822d1f31c09310cd0ad297b",
+  "speciality": "Pédiatrie",
+  "contrat_type": "Temps partiel",
+  "contrat_hours": "25",
+  "work_days": [
+    {
+      "day": "Mardi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Jeudi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Samedi",
+      "start_time": "08:00",
+      "end_time": "14:00"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6822e5f0dcdf3bdfcbc1a590"
+  },
+  "user_id": "6822d2481c09310cd0ad297c",
+  "speciality": "Cardiologie",
+  "contrat_type": "Temps partiel",
+  "contrat_hours": "35",
+  "work_days": [
+    {
+      "day": "Mercredi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Jeudi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Samedi",
+      "start_time": "08:00",
+      "end_time": "14:00"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6822e60ddcdf3bdfcbc1a591"
+  },
+  "user_id": "6822d2821c09310cd0ad297d",
+  "speciality": "Dermatologie",
+  "contrat_type": "Temps partiel",
+  "contrat_hours": "25",
+  "work_days": [
+    {
+      "day": "Mardi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Jeudi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Dimanche",
+      "start_time": "08:00",
+      "end_time": "14:00"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6822e631dcdf3bdfcbc1a592"
+  },
+  "user_id": "6822d2c51c09310cd0ad297e",
+  "speciality": "Dermatologie",
+  "contrat_type": "Temps partiel",
+  "contrat_hours": "35",
+  "work_days": [
+    {
+      "day": "Mardi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Jeudi",
+      "start_time": "09:00",
+      "end_time": "17:00"
+    },
+    {
+      "day": "Dimanche",
+      "start_time": "08:00",
+      "end_time": "14:00"
+    }
+  ]
+}]

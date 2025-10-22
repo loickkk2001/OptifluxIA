@@ -1,0 +1,16 @@
+export interface Absence {
+  id?: string;
+  staff_id: string;
+  start_date: string;
+  start_hour: string;
+  end_date: string;
+  end_hour: string;
+  reason: string;
+  comment: string;
+  service_id?: string;
+  replacement_id?: string;  // Made optional with ?
+  status: string;
+  created_at?: string;
+  updated_at?: string;
+  matricule?: string;
+}
