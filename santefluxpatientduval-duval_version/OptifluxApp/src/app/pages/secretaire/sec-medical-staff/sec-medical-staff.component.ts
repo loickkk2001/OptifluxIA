@@ -108,7 +108,7 @@ export class SecMedicalStaffComponent implements AfterViewInit {
       speciality: ['', Validators.required],
       contrat_type: ['', Validators.required],
       contrat_hours: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
-      work_days: this.fb.array([], this.uniqueDaysValidator)
+      work_days: this.fb.array([]) // FormArray simplifié temporairement
     });
   }
 
@@ -117,7 +117,7 @@ export class SecMedicalStaffComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // L'initialisation des jours de travail sera faite dans loadAllData
+    // Section des jours de travail temporairement désactivée
     this.cdr.detectChanges();
   }
 
@@ -160,10 +160,8 @@ export class SecMedicalStaffComponent implements AfterViewInit {
         console.log('🔍 Services chargés:', this.services);
         console.log('🔍 Nombre de services:', this.services.length);
         
-        // Initialiser les jours de travail si nécessaire
-        if (this.contratForm && this.contratForm.get('work_days') && this.workDaysArray.length === 0) {
-          this.addWorkDay();
-        }
+        // Le FormArray est maintenant initialisé avec un élément par défaut dans le constructeur
+        // Plus besoin d'ajouter un jour de travail ici
         
         // Ajouter un petit délai pour s'assurer que tout est initialisé
         setTimeout(() => {
@@ -274,11 +272,7 @@ export class SecMedicalStaffComponent implements AfterViewInit {
 
   get workDaysArray(): FormArray {
     const workDays = this.contratForm?.get('work_days') as FormArray;
-    if (!workDays) {
-      console.error('❌ work_days FormArray n\'est pas initialisé');
-      return this.fb.array([]);
-    }
-    return workDays;
+    return workDays || this.fb.array([]);
   }
 
   timeRangeValidator(control: FormGroup): { [key: string]: boolean } | null {

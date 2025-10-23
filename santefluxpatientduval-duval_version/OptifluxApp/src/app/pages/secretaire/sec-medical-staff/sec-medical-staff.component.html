@@ -595,98 +595,22 @@
       </p-iftalabel>
       <div class="h-2"></div>
 
-      <div>
-        <label class="font-medium">Jours de travail *</label>
-        <small
-          *ngIf="contratForm.get('work_days')?.errors?.['duplicateDays']"
-          class="text-red-500 block mb-2"
+      <!-- Section des jours de travail temporairement désactivée -->
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700"
+          >Jours de travail</label
         >
-          Les jours de travail doivent être uniques.
-        </small>
-        <div *ngIf="workDaysArray.controls.length > 0; else noWorkDays">
-          <div
-            *ngFor="
-              let workDay of workDaysArray.controls;
-              let i = index;
-              trackBy: trackByFn
-            "
-            class="flex flex-col gap-2 border p-2 rounded mb-2"
-          >
-            <div [formGroupName]="i" class="flex items-center gap-2">
-              <p-select
-                [options]="getAvailableDaysForIndex(i)"
-                formControlName="day"
-                placeholder="Sélectionner un jour"
-                class="w-full md:w-32"
-                [ngClass]="{'p-invalid': contratForm.get('work_days')?.errors?.['duplicateDays']}"
-              />
-              <p-datePicker
-                formControlName="start_time"
-                [timeOnly]="true"
-                [hourFormat]="'24'"
-                placeholder="HH:MM"
-                class="w-24"
-              />
-              <span>-</span>
-              <p-datePicker
-                formControlName="end_time"
-                [timeOnly]="true"
-                [hourFormat]="'24'"
-                placeholder="HH:MM"
-                class="w-24"
-              />
-              <button
-                type="button"
-                class="p-button p-button-danger p-button-sm"
-                (click)="removeWorkDay(i)"
-              >
-                <i class="pi pi-trash"></i>
-              </button>
-            </div>
-            <small
-              *ngIf="
-                workDaysArray.at(i).get('day')?.touched &&
-                workDaysArray.at(i).get('day')?.invalid
-              "
-              class="text-red-500"
-            >
-              Jour requis.
-            </small>
-            <small
-              *ngIf="
-                workDaysArray.at(i).get('start_time')?.touched &&
-                workDaysArray.at(i).get('start_time')?.invalid
-              "
-              class="text-red-500"
-            >
-              Heure de début requise.
-            </small>
-            <small
-              *ngIf="
-                workDaysArray.at(i).get('end_time')?.touched &&
-                workDaysArray.at(i).get('end_time')?.invalid
-              "
-              class="text-red-500"
-            >
-              Heure de fin requise.
-            </small>
-            <small
-              *ngIf="workDaysArray.at(i).errors?.['invalidTimeRange']"
-              class="text-red-500"
-            >
-              L'heure de fin doit être après l'heure de début.
-            </small>
-          </div>
-        </div>
-        <ng-template #noWorkDays>
-          <p class="text-gray-500">Aucun jour de travail ajouté.</p>
-        </ng-template>
-        <p-button
-          label="Ajouter un jour"
-          severity="secondary"
-          (click)="addWorkDay()"
-          [disabled]="workDaysArray.length >= availableDays.length"
+        <input
+          pInputText
+          value="Lundi - Vendredi (9h-17h)"
+          readonly
+          class="uniform-input"
+          placeholder="Configuration par défaut"
         />
+        <small class="text-gray-500">
+          Les jours de travail seront configurés automatiquement. Cette section
+          sera réactivée dans une prochaine version.
+        </small>
       </div>
       <div class="h-2"></div>
 
