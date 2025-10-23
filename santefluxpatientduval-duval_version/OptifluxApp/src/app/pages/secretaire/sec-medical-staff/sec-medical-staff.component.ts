@@ -81,9 +81,6 @@ export class SecMedicalStaffComponent implements AfterViewInit {
   totalRecords = 0;
 
   roleOptions = [
-    { label: 'Administrateur', value: 'admin' },
-    { label: 'Cadre de santé', value: 'cadre' },
-    { label: 'Secrétaire', value: 'nurse' },
     { label: 'Médecin', value: 'doctor' }
   ];
 
@@ -120,9 +117,7 @@ export class SecMedicalStaffComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    if (this.workDaysArray.length === 0) {
-      this.addWorkDay();
-    }
+    // L'initialisation des jours de travail sera faite dans loadAllData
     this.cdr.detectChanges();
   }
 
@@ -131,7 +126,10 @@ export class SecMedicalStaffComponent implements AfterViewInit {
       next: (user: User | null) => {
         if (user?._id) {
           this.loggedInUser = user;
-          this.loadAllData();
+          // Attendre que le cycle de détection soit terminé
+          setTimeout(() => {
+            this.loadAllData();
+          }, 0);
         } else {
           this.showError('Impossible de charger les informations utilisateur');
         }
@@ -148,14 +146,29 @@ export class SecMedicalStaffComponent implements AfterViewInit {
       this.serviceService.findAllServices()
     ]).subscribe({
       next: ([rolesResponse, servicesResponse]) => {
-        this.roles = rolesResponse.data
+        console.log('🔍 Réponse rôles:', rolesResponse);
+        console.log('🔍 Réponse services:', servicesResponse);
+        
+        this.roles = (rolesResponse.data || [])
           .filter(role => role.name.toLowerCase() === 'doctor')
           .map(role => ({
             ...role,
             name: this.mapRoleName(role.name)
-          })) || [];
+          }));
+        
         this.services = servicesResponse.data || [];
-        this.loadUsers();
+        console.log('🔍 Services chargés:', this.services);
+        console.log('🔍 Nombre de services:', this.services.length);
+        
+        // Initialiser les jours de travail si nécessaire
+        if (this.contratForm && this.contratForm.get('work_days') && this.workDaysArray.length === 0) {
+          this.addWorkDay();
+        }
+        
+        // Ajouter un petit délai pour s'assurer que tout est initialisé
+        setTimeout(() => {
+          this.loadUsers();
+        }, 100);
       },
       error: () => {
         this.showError('Échec du chargement des données');
@@ -164,16 +177,17 @@ export class SecMedicalStaffComponent implements AfterViewInit {
   }
 
   loadUsers() {
-    if (!this.loggedInUser?.service_id) {
-      this.showError('Service de l\'utilisateur non défini');
-      this.users = [];
-      return;
-    }
-
+    console.log('🔍 Début du chargement des utilisateurs');
     this.userService.findAllUsers().subscribe({
       next: (response) => {
+        console.log('🔍 Réponse API utilisateurs:', response);
+        console.log('🔍 Tous les utilisateurs:', response.data);
+        
         this.users = response.data
-          .filter(user => user.service_id === this.loggedInUser?.service_id)
+          .filter(user => {
+            console.log('🔍 Utilisateur:', user.first_name, user.last_name, 'Rôle:', user.role);
+            return user.role === 'doctor';
+          })
           .map(user => ({
             ...user,
             serviceName: this.services.find(s => s.id === user.service_id)?.name || 'Non attribué',
@@ -185,15 +199,27 @@ export class SecMedicalStaffComponent implements AfterViewInit {
             return dateB.getTime() - dateA.getTime();
           });
 
+        console.log('🔍 Médecins filtrés:', this.users);
+        console.log('🔍 Nombre de médecins trouvés:', this.users.length);
+
         if (this.users.length === 0) {
-          this.showInfo('Aucun utilisateur trouvé pour votre service');
+          this.showInfo('Aucun médecin trouvé');
         }
 
         this.users.forEach(user => this.loadContratForUser(user));
         this.filteredUsers = [...this.users];
         this.totalRecords = this.filteredUsers.length;
+        
+        console.log('🔍 filteredUsers final:', this.filteredUsers);
+        console.log('🔍 totalRecords:', this.totalRecords);
+        
+        // Forcer la détection de changement
+        this.cdr.detectChanges();
       },
-      error: () => this.showError('Erreur lors du chargement des utilisateurs')
+      error: (error) => {
+        console.error('❌ Erreur lors du chargement des utilisateurs:', error);
+        this.showError('Erreur lors du chargement des utilisateurs');
+      }
     });
   }
 
@@ -247,7 +273,12 @@ export class SecMedicalStaffComponent implements AfterViewInit {
   }
 
   get workDaysArray(): FormArray {
-    return this.contratForm.get('work_days') as FormArray;
+    const workDays = this.contratForm?.get('work_days') as FormArray;
+    if (!workDays) {
+      console.error('❌ work_days FormArray n\'est pas initialisé');
+      return this.fb.array([]);
+    }
+    return workDays;
   }
 
   timeRangeValidator(control: FormGroup): { [key: string]: boolean } | null {
@@ -262,6 +293,12 @@ export class SecMedicalStaffComponent implements AfterViewInit {
   }
 
   addWorkDay(day: string = '', startTime: string | Date = '09:00', endTime: string | Date = '17:00') {
+    // Vérifier que le FormArray existe
+    if (!this.contratForm || !this.contratForm.get('work_days')) {
+      console.error('❌ contratForm ou work_days n\'est pas initialisé');
+      return;
+    }
+
     const start = typeof startTime === 'string' ? this.parseTime(startTime) : startTime;
     const end = typeof endTime === 'string' ? this.parseTime(endTime) : endTime;
   
@@ -395,7 +432,7 @@ export class SecMedicalStaffComponent implements AfterViewInit {
       phoneNumber: values.tel,
       email: values.email,
       password: '12345678',
-      role: values.role, // Uses backend role value (e.g., 'admin')
+      role: 'doctor', // Forcer le rôle à doctor
       service_id: values.service || this.loggedInUser?.service_id || undefined
     };
 
