@@ -233,7 +233,7 @@ export class ReportAbsenceComponent implements OnInit {
 
   loadDoctors() {
     this.userService.findAllUsers().subscribe(data => {
-      this.doctors = data.data.filter(user => user.role === 'cadre');
+      this.doctors = data.data.filter(user => user.role === 'doctor');
     });
   } 
 
