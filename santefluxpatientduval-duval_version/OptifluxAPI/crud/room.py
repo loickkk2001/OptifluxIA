@@ -32,7 +32,8 @@ async def create_room(room_info):
             "matricule": matricule,
             "localisation": room_info.get("localisation"),
             "description": room_info.get("description"),
-            "status": room_info.get("status", "Disponible")
+            "status": room_info.get("status", "Disponible"),
+            "phone_number": room_info.get("phone_number")
         })
         
         # Insérer le room

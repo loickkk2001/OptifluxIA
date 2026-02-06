@@ -52,4 +52,11 @@ export class BoxPlanService {
         { headers: { 'Content-Type': 'application/json' } }
     );
   }
+
+  uploadBoxPlans(file: File): Observable<Response<any>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    return this.http.post<Response<any>>(`${this.apiUrl}/upload`, formData);
+  }
 }

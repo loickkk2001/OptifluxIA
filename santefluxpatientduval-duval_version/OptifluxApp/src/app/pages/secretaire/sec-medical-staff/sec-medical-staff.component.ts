@@ -617,6 +617,18 @@ export class SecMedicalStaffComponent implements AfterViewInit {
     this.cdr.detectChanges();
   }
 
+  onDrawerVisibleChange(visible: boolean) {
+    this.drawerVisible.set(visible);
+  }
+
+  onDetailsDrawerVisibleChange(visible: boolean) {
+    this.detailsDrawerVisible.set(visible);
+  }
+
+  onContratDialogVisibleChange(visible: boolean) {
+    this.contratDialogVisible.set(visible);
+  }
+
   submitContrat() {
     if (this.contratForm.invalid) {
       this.contratForm.markAllAsTouched();

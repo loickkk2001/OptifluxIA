@@ -30,6 +30,52 @@
   background: #555;
 }
 
+/* Styles pour améliorer la lisibilité des statuts de réservation */
+.bg-green-100 {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+  font-weight: 500;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.bg-yellow-100 {
+  background-color: #2563eb !important; /* Bleu foncé pour meilleur contraste */
+  color: #ffffff !important; /* Texte blanc pour lisibilité */
+  font-weight: 600;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.bg-red-100 {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+  font-weight: 500;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.bg-red-200 {
+  background-color: #fecaca !important;
+  color: #7f1d1d !important;
+  font-weight: 600;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.bg-gray-100 {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  font-weight: 500;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+/* Amélioration générale des cellules de la table */
+.p-datatable .p-datatable-tbody > tr > td {
+  vertical-align: middle;
+}
+
 @media print {
   body * {
       visibility: hidden;

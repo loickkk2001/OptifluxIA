@@ -14,13 +14,6 @@
 
       <!-- Sélection des profils -->
       <div class="w-full flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mx-2">
-        <div class="w-full sm:w-32 h-25 mx-auto sm:m-3 hover:text-purple-400" [ngClass]="{'text-purple-400': isAdminSelected()}" (click)="toggleAdminSelection()">
-          <div class="flex justify-center w-full sm:w-32 h-20 border border-gray-300 rounded hover:border-purple-400" [ngClass]="{'border-purple-400': isAdminSelected()}">
-            <img src="assets/images/administrateur.png" class="m-1 rounded-2xl w-15 h-15 sm:w-full sm:h-full object-cover" alt="admin">
-          </div>
-          <p class="font-light text-center text-xs sm:text-xs mt-2">Administrateur</p>
-        </div>
-
         <div class="w-full sm:w-32 h-25 mx-auto sm:m-3 hover:text-purple-400" [ngClass]="{'text-purple-400': isCadreSelected()}" (click)="toggleCadreSelection()">
           <div class="flex justify-center w-full sm:w-32 h-20 border border-gray-300 rounded hover:border-purple-400" [ngClass]="{'border-purple-400': isCadreSelected()}">
             <img src="assets/images/cadre.png" class="m-1 rounded-2xl w-15 h-15 sm:w-full sm:h-full object-cover" alt="cadre">

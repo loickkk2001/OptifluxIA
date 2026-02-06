@@ -23,6 +23,7 @@ export interface CreateRoomRequest {
   updated_at?: string;
   matricule?: string;
   status?: string;
+  phone_number?: string;
 }
 
 export interface CreateSpecialityRequest {

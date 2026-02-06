@@ -5,6 +5,7 @@ import { RoleService } from '../../../services/role/role.service';
 import { ServiceService } from '../../../services/service/service.service';
 import { ContratService, Contrat, WorkDay } from '../../../services/contrat/contrat.service';
 import { AuthService } from '../../../services/auth/auth.service';
+import { CreateUserRequest } from '../../../dtos/request/CreateUserRequest';
 import { User } from '../../../models/User';
 import { Role } from '../../../models/role';
 import { Service } from '../../../models/services';
@@ -23,6 +24,7 @@ import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
+import { PasswordModule } from 'primeng/password';
 
 @Component({
   selector: 'app-medical-staff',
@@ -38,7 +40,7 @@ import { DropdownModule } from 'primeng/dropdown';
     IftaLabelModule,
     ConfirmDialogModule,
     ToastModule,
-    DatePickerModule, FormsModule, DropdownModule, 
+    DatePickerModule, FormsModule, DropdownModule, PasswordModule
   ],
   standalone: true,
   templateUrl: './medical-staff.component.html',
@@ -69,6 +71,7 @@ export class MedicalStaffComponent implements AfterViewInit {
   drawerVisible: WritableSignal<boolean> = signal(false);
   detailsDrawerVisible: WritableSignal<boolean> = signal(false);
   contratDialogVisible: WritableSignal<boolean> = signal(false);
+  addUserDialogVisible: WritableSignal<boolean> = signal(false);
   isEditMode: boolean = false;
   isContratEditMode: boolean = false;
 
@@ -77,10 +80,10 @@ export class MedicalStaffComponent implements AfterViewInit {
   availableDays: string[] = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
   roleOptions = [
-    { label: 'Administrateur', value: 'Administrateur' },
-    { label: 'Secrétaire', value: 'Secrétaire' },
-    { label: 'Cadre de santé', value: 'Cadre de santé' },
-    { label: 'Médecin', value: 'Médecin' }
+    { label: 'Administrateur', value: 'admin' },
+    { label: 'Cadre de santé', value: 'cadre' },
+    { label: 'Médecin', value: 'doctor' },
+    { label: 'Secrétaire', value: 'nurse' }
   ];
 
   constructor(
@@ -101,6 +104,7 @@ export class MedicalStaffComponent implements AfterViewInit {
       email: ['', [Validators.required, Validators.email]],
       role: ['', Validators.required],
       service: [''],
+      password: ['', [Validators.required, Validators.minLength(8)]]
     });
 
     this.contratForm = this.fb.group({
@@ -116,7 +120,8 @@ export class MedicalStaffComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    if (this.workDaysArray.length === 0) {
+    // S'assurer que le FormArray est initialisé
+    if (!this.workDaysArray || this.workDaysArray.length === 0) {
       this.addWorkDay();
     }
     this.cdr.detectChanges();
@@ -202,6 +207,16 @@ export class MedicalStaffComponent implements AfterViewInit {
       doctor: 'Médecin'
     };
     return roleMap[name.toLowerCase()] || name;
+  }
+
+  private getBackendRoleName(displayRole: string): string {
+    const reverseMap: { [key: string]: string } = {
+      'Administrateur': 'admin',
+      'Secrétaire': 'nurse',
+      'Cadre de santé': 'cadre',
+      'Médecin': 'doctor'
+    };
+    return reverseMap[displayRole] || displayRole;
   }
 
   loadUsers() {
@@ -320,12 +335,14 @@ export class MedicalStaffComponent implements AfterViewInit {
     console.log('WorkDay removed, current state:', this.workDaysArray.value);
   }
 
-  getAvailableDaysForIndex(index: number): string[] {
+  getAvailableDaysForIndex(index: number): any[] {
     const selectedDays = this.workDaysArray.controls
       .map((control, idx) => (idx !== index ? control.get('day')?.value : null))
       .filter(day => day !== null);
       
-    return this.availableDays.filter(day => !selectedDays.includes(day));
+    return this.availableDays
+      .filter(day => !selectedDays.includes(day))
+      .map(day => ({ label: day, value: day }));
   }
 
   getUserWorkDays(user: User): { day: string, isWorking: boolean }[] {
@@ -397,6 +414,74 @@ export class MedicalStaffComponent implements AfterViewInit {
     });
   }
 
+  openAddUserDialog() {
+    this.isEditMode = false;
+    this.selectedUser = null;
+    this.userForm.reset();
+    // Réinitialiser tous les champs du formulaire
+    this.userForm.patchValue({
+      first_name: '',
+      last_name: '',
+      tel: '',
+      email: '',
+      role: '',
+      service: this.loggedInUser?.service_id || '',
+      password: ''
+    });
+    // Réinitialiser l'état touched/untouched
+    Object.keys(this.userForm.controls).forEach(key => {
+      this.userForm.get(key)?.markAsUntouched();
+    });
+    this.addUserDialogVisible.set(true);
+  }
+
+  addUser() {
+    if (this.userForm.invalid) {
+      this.userForm.markAllAsTouched();
+      return;
+    }
+
+    this.loading.set(true);
+    const formValue = this.userForm.value;
+    
+    // S'assurer que service_id est undefined si vide ou null
+    let serviceId: string | undefined = undefined;
+    if (formValue.service && formValue.service !== '') {
+      serviceId = formValue.service;
+    } else if (this.loggedInUser?.service_id) {
+      serviceId = this.loggedInUser.service_id;
+    }
+    
+    const createUserRequest: CreateUserRequest = {
+      first_name: formValue.first_name,
+      last_name: formValue.last_name,
+      phoneNumber: formValue.tel,
+      email: formValue.email,
+      password: formValue.password,
+      role: formValue.role,
+      service_id: serviceId
+    };
+
+    this.authService.createUser(createUserRequest).subscribe({
+      next: (response) => {
+        console.log('Utilisateur créé avec succès:', response);
+        this.showSuccess('Utilisateur créé avec succès');
+        this.loadUsers();
+        this.addUserDialogVisible.set(false);
+        this.userForm.reset();
+      },
+      error: (error) => {
+        console.error('Erreur lors de la création de l\'utilisateur:', error);
+        this.showError('Erreur lors de la création de l\'utilisateur: ' + (error.error?.detail || error.error?.message || error.message));
+      },
+      complete: () => this.loading.set(false)
+    });
+  }
+
+  onAddUserDialogVisibleChange(visible: boolean) {
+    this.addUserDialogVisible.set(visible);
+  }
+
   loadRoles() {
     this.roleService.findAllRoles().subscribe({
       next: (response) => {
@@ -410,15 +495,28 @@ export class MedicalStaffComponent implements AfterViewInit {
   editUser(user: User) {
     this.isEditMode = true;
     this.selectedUser = { ...user };
+    // Convertir le rôle backend en valeur pour le select
+    const roleValue = this.mapRoleToValue(user.role);
     this.userForm.patchValue({
       first_name: user.first_name,
       last_name: user.last_name,
       tel: user.phoneNumber,
       email: user.email,
-      role: this.roles.find(r => r.name === user.role) || user.role,
-      service: this.services.find(s => s.id === user.service_id) || user.service_id,
+      role: roleValue,
+      service: this.services.find(s => s.id === user.service_id)?.id || user.service_id,
     });
     this.drawerVisible.set(true);
+  }
+
+  private mapRoleToValue(backendRole: string): string {
+    // Convertir le rôle backend en valeur pour le select
+    const roleMap: { [key: string]: string } = {
+      'admin': 'admin',
+      'nurse': 'nurse',
+      'cadre': 'cadre',
+      'doctor': 'doctor'
+    };
+    return roleMap[backendRole?.toLowerCase()] || backendRole;
   }
 
   onSubmit() {
@@ -436,7 +534,7 @@ export class MedicalStaffComponent implements AfterViewInit {
         last_name: values.last_name,
         phoneNumber: values.tel,
         email: values.email,
-        role: typeof values.role === 'object' ? values.role.name : values.role,
+        role: values.role, // Utiliser directement la valeur backend
         service_id: values.service || null
       };
       this.userService.updateUser(userId!, updatedUser).subscribe({
@@ -559,11 +657,15 @@ export class MedicalStaffComponent implements AfterViewInit {
   }
 
   openContratDialog() {
-    if (this.workDaysArray.length === 0) {
+    // S'assurer que le FormArray est initialisé avec au moins un élément
+    if (!this.workDaysArray || this.workDaysArray.length === 0) {
       this.addWorkDay();
     }
-    this.contratDialogVisible.set(true);
-    this.cdr.detectChanges();
+    // Attendre que le FormArray soit complètement initialisé
+    setTimeout(() => {
+      this.contratDialogVisible.set(true);
+      this.cdr.detectChanges();
+    }, 0);
   }
 
   closeDetailsDrawer() {

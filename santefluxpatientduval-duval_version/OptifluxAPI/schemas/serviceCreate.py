@@ -17,6 +17,7 @@ class RoomCreate(BaseModel):
     updated_at: datetime = None
     matricule: str = None
     status: str = "Disponible"
+    phone_number: str = None
 
 class SpecialitéCreate(BaseModel):
     name: str

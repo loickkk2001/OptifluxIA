@@ -16,6 +16,7 @@ export interface Room {
   updated_at?: string;
   matricule?: string;
   status?: string;
+  phone_number?: string;
 }
 
 export interface Pole {

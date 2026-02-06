@@ -1,5 +1,5 @@
 from bson import ObjectId
-from fastapi import HTTPException, APIRouter, Body
+from fastapi import HTTPException, APIRouter, Body, File, UploadFile
 from starlette import status
 from crud.box_plan import create_box_plan, delete_box_plan, assign_replacer_to_box_plan, update_box_plan_status
 from database.database import box_plans
@@ -7,6 +7,9 @@ from schemas.boxPlan import BoxPlanCreate
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from utils.excel_utils import parse_excel
+from utils.planning_parser import parse_planning_excel
+import pandas as pd
 
 router = APIRouter()
    
@@ -41,6 +44,125 @@ async def register(box_plan_info: BoxPlanCreate):
         raise HTTPException(
             status_code=500,
             detail=f"Erreur interne du serveur: {str(e)}"
+        )
+
+@router.post("/box_plans/upload")
+async def upload_box_plans(
+    file: UploadFile = File(...),
+    use_colors: bool = False,
+    poll_id: Optional[str] = None,
+    staff_id: Optional[str] = None,
+    week_start_date: Optional[str] = None
+):
+    """
+    Upload de fichier Excel pour créer des box plans.
+    
+    Deux modes:
+    1. use_colors=False (défaut): Format tabulaire avec colonnes (staff_id, doctors_id, poll, room, etc.)
+    2. use_colors=True: Format planning avec couleurs (nécessite poll_id, staff_id, week_start_date)
+    
+    Args:
+        file: Fichier Excel à uploader
+        use_colors: Si True, parse le planning avec couleurs. Si False, format tabulaire classique.
+        poll_id: ID du pôle (requis si use_colors=True)
+        staff_id: ID du cadre de santé (requis si use_colors=True)
+        week_start_date: Date de début de semaine YYYY-MM-DD (optionnel, utilise la semaine actuelle)
+    """
+    try:
+        file_content = await file.read()
+        
+        # Mode parsing avec couleurs
+        if use_colors:
+            if not poll_id or not staff_id:
+                raise HTTPException(
+                    status_code=400,
+                    detail="poll_id et staff_id sont requis lorsque use_colors=True"
+                )
+            
+            # Parser le planning avec couleurs
+            data = parse_planning_excel(
+                file_content=file_content,
+                poll_id=poll_id,
+                staff_id=staff_id,
+                week_start_date=week_start_date,
+                room_mapping=None  # Peut être amélioré pour passer un mapping
+            )
+        else:
+            # Mode format tabulaire classique
+            from io import BytesIO
+            file_obj = BytesIO(file_content)
+            file_obj.name = file.filename
+            data = await parse_excel(UploadFile(file=file_obj, filename=file.filename))
+        
+        inserted_ids = []
+        errors = []
+        polls = set()
+        
+        for index, item in enumerate(data):
+            try:
+                # Gérer doctors_id : peut être une string avec IDs séparés par virgule ou point-virgule
+                doctors_id_str = item.get("doctors_id", "")
+                if isinstance(doctors_id_str, str):
+                    # Séparer par virgule ou point-virgule et nettoyer
+                    doctors_id = [d.strip() for d in doctors_id_str.replace(";", ",").split(",") if d.strip()]
+                elif isinstance(doctors_id_str, list):
+                    doctors_id = doctors_id_str
+                else:
+                    doctors_id = []
+                
+                # Convertir la date si nécessaire
+                date_value = item.get("date")
+                if isinstance(date_value, pd.Timestamp):
+                    date_str = date_value.strftime("%Y-%m-%d")
+                elif isinstance(date_value, datetime):
+                    date_str = date_value.strftime("%Y-%m-%d")
+                else:
+                    date_str = str(date_value)
+                
+                poll_id_item = str(item.get("poll", ""))
+                polls.add(poll_id_item)  # Collecter les polls pour validation
+                
+                box_plan_data = {
+                    "staff_id": str(item.get("staff_id", "")),
+                    "doctors_id": doctors_id,
+                    "poll": poll_id_item,
+                    "room": str(item.get("room", "")),
+                    "period": str(item.get("period", "")),
+                    "date": date_str,
+                    "consultation_number": str(item.get("consultation_number", "0")),
+                    "consultation_time": str(item.get("consultation_time", "30")),
+                    "comment": str(item.get("comment", "")),
+                    "status": str(item.get("status", "Réservé"))
+                }
+                
+                # Valider les champs requis
+                if not box_plan_data["staff_id"] or not box_plan_data["poll"] or not box_plan_data["room"]:
+                    errors.append(f"Ligne {index + 2}: Champs requis manquants (staff_id, poll, room)")
+                    continue
+                
+                result = await create_box_plan(box_plan_data)
+                inserted_ids.append(str(result["box_plan_id"]))
+            except Exception as e:
+                errors.append(f"Ligne {index + 2}: {str(e)}")
+                continue
+        
+        message = f"{len(inserted_ids)} réservations créées avec succès"
+        if len(polls) > 1:
+            message += f" (Attention: {len(polls)} pôles différents détectés)"
+        if errors:
+            message += f", {len(errors)} erreur(s)"
+        
+        return {
+            "message": message,
+            "data": inserted_ids,
+            "errors": errors if errors else None
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Erreur lors de l'upload du fichier: {str(e)}"
         )
 
 @router.delete("/box_plans/delete/{box_plan_id}")

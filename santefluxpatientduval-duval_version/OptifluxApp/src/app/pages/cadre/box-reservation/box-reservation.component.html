@@ -68,16 +68,65 @@
     
     <!-- Dialog pour l'upload -->
     <p-dialog header="Importer un planning" [(visible)]="displayUploadDialog" [style]="{width: '50vw'}">
-        <p-fileUpload name="planningFile" 
-                     url="/api/upload" 
-                     (onUpload)="onUpload($event)"
-                     accept=".xlsx,.csv"
-                     maxFileSize="1000000">
-            <ng-template pTemplate="content">
-                <i class="pi pi-file-excel p-5" style="font-size: 5rem; color: var(--green-500)"></i>
-                <p class="m-0">Glissez-déposez le fichier Excel ici ou cliquez pour parcourir</p>
-            </ng-template>
-        </p-fileUpload>
+        <div class="flex flex-col gap-4">
+            <!-- Options d'import -->
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="useColors" [(ngModel)]="useColorsMode" class="w-4 h-4">
+                    <label for="useColors" class="text-sm">Utiliser le mode avec couleurs (planning visuel)</label>
+                </div>
+                
+                <div *ngIf="useColorsMode" class="flex flex-col gap-3 p-3 bg-gray-50 rounded">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium">Pôle *</label>
+                        <p-dropdown 
+                            [options]="poleOptions" 
+                            [(ngModel)]="selectedPoleId"
+                            placeholder="Sélectionner un pôle"
+                            [style]="{'width': '100%'}">
+                        </p-dropdown>
+                    </div>
+                    
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium">Date de début de semaine</label>
+                        <p-calendar 
+                            [(ngModel)]="selectedWeekStartDate"
+                            dateFormat="yy-mm-dd"
+                            [showIcon]="true"
+                            [style]="{'width': '100%'}"
+                            [readonlyInput]="false">
+                        </p-calendar>
+                    </div>
+                    
+                    <p class="text-xs text-gray-600">
+                        <strong>Format attendu :</strong> Fichier Excel avec colonnes (N° téléphone, LUNDI, MARDI, etc.) 
+                        et cellules colorées pour les spécialités (Jaune=urologie, Bleu=viscérale, Vert=vasculaire, Rose=Hépatho gastro)
+                    </p>
+                </div>
+                
+                <div *ngIf="!useColorsMode" class="p-3 bg-blue-50 rounded">
+                    <p class="text-xs text-gray-700">
+                        <strong>Format tabulaire :</strong> Fichier Excel avec colonnes : 
+                        staff_id, doctors_id, poll, room, period, date, consultation_number, consultation_time, comment, status
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Upload de fichier -->
+            <p-fileUpload 
+                name="file" 
+                [url]="getUploadUrl()"
+                (onUpload)="onUpload($event)"
+                (onError)="onUploadError($event)"
+                accept=".xlsx,.xls"
+                maxFileSize="5000000"
+                [disabled]="useColorsMode && (!selectedPoleId || !loggedInUserId)">
+                <ng-template pTemplate="content">
+                    <i class="pi pi-file-excel p-5" style="font-size: 5rem; color: var(--green-500)"></i>
+                    <p class="m-0">Glissez-déposez le fichier Excel ici ou cliquez pour parcourir</p>
+                </ng-template>
+            </p-fileUpload>
+        </div>
     </p-dialog>
     
     <!-- Utilisation de p-tabView pour les pôles -->
@@ -163,7 +212,7 @@
                                       </div>
                                   </div>
                               </td>
-                              <td [ngClass]="{
+                              <td [ngClass]="getSpecialityColorClass(program.data.matin.lundi.speciality) || {
                                 'bg-green-100': program.data.matin.lundi.message === 'Disponible', 
                                 'bg-yellow-100': program.data.matin.lundi.message === 'Réservé',
                                 'bg-red-100': program.data.matin.lundi.message === 'Annulé',
@@ -183,7 +232,7 @@
                                       </div>
                                   </div>
                               </td>
-                              <td [ngClass]="{
+                              <td [ngClass]="getSpecialityColorClass(program.data.matin.mardi.speciality) || {
                                 'bg-green-100': program.data.matin.mardi.message === 'Disponible', 
                                 'bg-yellow-100': program.data.matin.mardi.message === 'Réservé',
                                 'bg-red-100': program.data.matin.mardi.message === 'Annulé',
@@ -203,7 +252,7 @@
                                       </div>
                                   </div>
                               </td>
-                              <td [ngClass]="{
+                              <td [ngClass]="getSpecialityColorClass(program.data.matin.mercredi.speciality) || {
                                 'bg-green-100': program.data.matin.mercredi.message === 'Disponible', 
                                 'bg-yellow-100': program.data.matin.mercredi.message === 'Réservé',
                                 'bg-red-100': program.data.matin.mercredi.message === 'Annulé',
@@ -223,7 +272,7 @@
                                       </div>
                                   </div>
                               </td>
-                              <td [ngClass]="{
+                              <td [ngClass]="getSpecialityColorClass(program.data.matin.jeudi.speciality) || {
                                 'bg-green-100': program.data.matin.jeudi.message === 'Disponible', 
                                 'bg-yellow-100': program.data.matin.jeudi.message === 'Réservé',
                                 'bg-red-100': program.data.matin.jeudi.message === 'Annulé',
@@ -243,7 +292,7 @@
                                       </div>
                                   </div>
                               </td>
-                              <td [ngClass]="{
+                              <td [ngClass]="getSpecialityColorClass(program.data.matin.vendredi.speciality) || {
                                 'bg-green-100': program.data.matin.vendredi.message === 'Disponible', 
                                 'bg-yellow-100': program.data.matin.vendredi.message === 'Réservé',
                                 'bg-red-100': program.data.matin.vendredi.message === 'Annulé',
@@ -268,7 +317,7 @@
                                       </div>
                                   </div>
                               </td>
-                              <td [ngClass]="{
+                              <td [ngClass]="getSpecialityColorClass(program.data.AM.lundi.speciality) || {
                                 'bg-green-100': program.data.AM.lundi.message === 'Disponible', 
                                 'bg-yellow-100': program.data.AM.lundi.message === 'Réservé',
                                 'bg-red-100': program.data.AM.lundi.message === 'Annulé',
@@ -288,7 +337,7 @@
                                       </div>
                                   </div>
                               </td>
-                              <td [ngClass]="{
+                              <td [ngClass]="getSpecialityColorClass(program.data.AM.mardi.speciality) || {
                                 'bg-green-100': program.data.AM.mardi.message === 'Disponible', 
                                 'bg-yellow-100': program.data.AM.mardi.message === 'Réservé',
                                 'bg-red-100': program.data.AM.mardi.message === 'Annulé',
@@ -308,7 +357,7 @@
                                       </div>
                                   </div>
                               </td>
-                              <td [ngClass]="{
+                              <td [ngClass]="getSpecialityColorClass(program.data.AM.mercredi.speciality) || {
                                 'bg-green-100': program.data.AM.mercredi.message === 'Disponible', 
                                 'bg-yellow-100': program.data.AM.mercredi.message === 'Réservé',
                                 'bg-red-100': program.data.AM.mercredi.message === 'Annulé',
@@ -328,7 +377,7 @@
                                       </div>
                                   </div>
                               </td>
-                              <td [ngClass]="{
+                              <td [ngClass]="getSpecialityColorClass(program.data.AM.jeudi.speciality) || {
                                 'bg-green-100': program.data.AM.jeudi.message === 'Disponible', 
                                 'bg-yellow-100': program.data.AM.jeudi.message === 'Réservé',
                                 'bg-red-100': program.data.AM.jeudi.message === 'Annulé',
@@ -348,7 +397,7 @@
                                       </div>
                                   </div>
                               </td>
-                              <td [ngClass]="{
+                              <td [ngClass]="getSpecialityColorClass(program.data.AM.vendredi.speciality) || {
                                 'bg-green-100': program.data.AM.vendredi.message === 'Disponible', 
                                 'bg-yellow-100': program.data.AM.vendredi.message === 'Réservé',
                                 'bg-red-100': program.data.AM.vendredi.message === 'Annulé',

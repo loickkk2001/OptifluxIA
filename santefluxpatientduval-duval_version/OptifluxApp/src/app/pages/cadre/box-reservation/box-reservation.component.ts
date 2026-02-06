@@ -18,12 +18,14 @@ import { SpecialityService } from '../../../services/speciality/speciality.servi
 import { RoomService } from '../../../services/room/room.service';
 import { UserService } from '../../../services/user/user.service';
 import { AuthService } from '../../../services/auth/auth.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { BoxPlan } from '../../../models/box_plan';
 import { Pole, Room, RoomProgram, PoleProgram, Speciality } from '../../../models/services';
 import { User } from '../../../models/User';
 import { TooltipModule } from 'primeng/tooltip';
 import { FormsModule } from '@angular/forms';
+import { HttpResponse } from '@angular/common/http';
+import { environment } from '../../../environment/environment';
 
 @Component({
   selector: 'app-box-reservation',
@@ -71,11 +73,16 @@ export class BoxReservationComponent implements OnInit {
   // Upload
   uploadedFiles: any[] = [];
   displayUploadDialog: boolean = false;
+  uploadUrl: string = `${environment.apiUrl}/box_plans/upload`;
+  useColorsMode: boolean = false;
+  selectedPoleId: string = '';
+  selectedWeekStartDate: string | Date = '';
   
   // Options
   doctorsOptions: any[] = [];
   roomsOptions: any[] = [];
   specialityOptions: any[] = [];
+  poleOptions: any[] = [];
 
   
 
@@ -94,6 +101,32 @@ export class BoxReservationComponent implements OnInit {
     this.loadUserAndData();
     this.initializeWeeks();
     this.setCurrentWeek();
+
+    // Diagnostic initial pour faciliter le débogage
+    setTimeout(() => {
+      console.log('=== DIAGNOSTIC PLANNING BOX ===');
+      console.log('Box Plans totaux:', this.originalBoxPlans.length);
+      console.log('Box Plans filtrés:', this.allBoxPlans.length);
+      console.log('Programs créés:', this.programs.length);
+      console.log('Pôles:', this.poles.length);
+      console.log('Salles:', this.allRooms.length);
+      console.log('Semaine sélectionnée:', this.selectedWeek);
+      console.log('Date sélectionnée:', this.selectedDate);
+      
+      if (this.allBoxPlans.length > 0) {
+        console.log('Exemple BoxPlan:', this.allBoxPlans[0]);
+        console.log('Date format:', typeof this.allBoxPlans[0].date, this.allBoxPlans[0].date);
+        console.log('Period format:', this.allBoxPlans[0].period);
+        console.log('Room format:', this.allBoxPlans[0].room);
+        console.log('Poll format:', this.allBoxPlans[0].poll);
+      } else {
+        console.warn('Aucun BoxPlan filtré - vérifier les dates et le filtrage par semaine');
+      }
+      
+      if (this.programs.length === 0 && this.allBoxPlans.length > 0) {
+        console.warn('Programs vides malgré des BoxPlans - vérifier initializePrograms()');
+      }
+    }, 2000);
   }
 
   initializeWeeks(): void {
@@ -236,13 +269,18 @@ export class BoxReservationComponent implements OnInit {
     endOfWeek.setHours(23, 59, 59, 999);
     
     console.log('Filtering box plans for week:', startOfWeek, 'to', endOfWeek);
+    console.log('Total original box plans:', this.originalBoxPlans.length);
     
     // Filtrer les plans de réservation
     const filteredPlans = this.originalBoxPlans.filter(plan => {
         try {
-            const planDate = new Date(plan.date);
+            const planDate = this.normalizeDate(plan.date);
             planDate.setHours(0, 0, 0, 0);
-            return planDate >= startOfWeek && planDate <= endOfWeek;
+            const isInRange = planDate >= startOfWeek && planDate <= endOfWeek;
+            if (isInRange) {
+              console.log('Plan in range:', plan.date, 'Room:', plan.room, 'Poll:', plan.poll);
+            }
+            return isInRange;
         } catch (e) {
             console.error('Error parsing plan date:', plan.date, e);
             return false;
@@ -250,6 +288,7 @@ export class BoxReservationComponent implements OnInit {
     });
     
     console.log('Filtered plans count:', filteredPlans.length);
+    console.log('Sample filtered plans:', filteredPlans.slice(0, 5));
     this.allBoxPlans = filteredPlans;
     this.initializePrograms();
     this.applyFilters();
@@ -293,6 +332,31 @@ export class BoxReservationComponent implements OnInit {
       }
       result.setHours(23, 59, 59, 999);
       return result;
+  }
+
+  // Normalise les dates venant d'Excel (timestamp), des strings ISO ou des objets Date
+  private normalizeDate(date: string | Date): Date {
+    if (date instanceof Date) {
+      return date;
+    }
+
+    if (typeof date === 'string') {
+      // Format Excel : nombre de jours depuis 1900-01-01
+      if (/^\d+$/.test(date)) {
+        const excelDate = parseInt(date, 10);
+        const jsDate = new Date((excelDate - 1) * 86400000);
+        jsDate.setFullYear(jsDate.getFullYear() - 70); // Ajustement pour base 1900
+        return jsDate;
+      }
+
+      const parsed = new Date(date);
+      if (!isNaN(parsed.getTime())) {
+        return parsed;
+      }
+    }
+
+    console.warn('Invalid date format:', date);
+    return new Date();
   }
 
   /*loadBoxPlansForWeek(startDate: Date, endDate: Date): void {
@@ -389,6 +453,7 @@ export class BoxReservationComponent implements OnInit {
             this.doctorsOptions = this.allUsers.map(doctor => ({ label: `${doctor.first_name} ${doctor.last_name}`, value: doctor._id }));
             this.roomsOptions = this.allRooms.map(room => ({ label: room.name, value: room.id }));
             this.specialityOptions = this.allSpecialities.map(s => ({ label: s.name, value: s.id }));
+            this.poleOptions = this.poles.map(p => ({ label: p.name, value: p.id }));
             
             // Filtrer par la semaine courante par défaut
             this.filterBoxPlansByWeek(new Date());
@@ -434,11 +499,24 @@ export class BoxReservationComponent implements OnInit {
                     'Plus disponible'
                 );
                 
-                // Mettre à jour le statut de la salle
-                const updateRoom$ = this.roomService.updateRoomStatus(
-                    boxPlan.room, 
-                    'Disponible'
-                );
+                // Trouver l'ID de la chambre (peut être un ID MongoDB ou un numéro de téléphone)
+                let roomId = boxPlan.room;
+                // Si ce n'est pas un ObjectId valide, chercher la room par nom ou autre identifiant
+                if (!this.isValidObjectId(boxPlan.room)) {
+                    const room = this.allRooms.find(r => r.name === boxPlan.room || r.id === boxPlan.room);
+                    if (room) {
+                        roomId = room.id;
+                    }
+                }
+                
+                // Mettre à jour le statut de la salle seulement si on a un ID valide
+                const updateRoom$ = roomId && this.isValidObjectId(roomId)
+                    ? this.roomService.updateRoomStatus(roomId, 'Disponible')
+                    : new Observable(observer => {
+                        console.warn(`Impossible de mettre à jour le statut de la chambre: ${boxPlan.room}`);
+                        observer.next({});
+                        observer.complete();
+                    });
                 
                 // Exécuter les deux opérations en parallèle
                 return forkJoin([updateStatus$, updateRoom$]);
@@ -453,34 +531,43 @@ export class BoxReservationComponent implements OnInit {
             },
             error: (err) => {
                 console.error('Erreur lors de la mise à jour des statuts:', err);
-                this.showError('Erreur lors de la mise à jour des réservations périmées');
+                // Ne pas bloquer l'application si certaines mises à jour échouent
+                this.showError('Certaines mises à jour ont échoué');
             }
         });
     }
   }
 
+  private isValidObjectId(id: string): boolean {
+    // Vérifier si c'est un ObjectId MongoDB valide (24 caractères hexadécimaux)
+    return /^[0-9a-fA-F]{24}$/.test(id);
+  }
+
   initializePrograms(): void {
+    console.log('Initializing programs with', this.allBoxPlans.length, 'box plans');
+    
     // Créer un map des pôles avec leurs salles associées via box_plan
     const poleRoomMap = new Map<string, Set<string>>();
     
     // 1. Construire la relation pôle -> salles
     this.allBoxPlans.forEach(plan => {
-        if (plan.poll) { // Ajout d'une vérification de null
+        if (plan.poll && plan.room) { // Vérifier que poll et room existent
             if (!poleRoomMap.has(plan.poll)) {
                 poleRoomMap.set(plan.poll, new Set());
             }
+            // Ajouter l'identifiant de la room (peut être ID MongoDB ou numéro de téléphone)
             poleRoomMap.get(plan.poll)?.add(plan.room);
+            console.log(`Added room ${plan.room} to pole ${plan.poll}`);
         }
     });
+  
+    console.log('Pole-Room map:', Array.from(poleRoomMap.entries()).map(([p, r]) => [p, Array.from(r)]));
   
     // 2. Créer les programmes pour chaque pôle qui a des réservations
     this.programs = Array.from(poleRoomMap.entries()).map(([poleId, roomIds]) => {
         const pole = this.poles.find(p => p.id === poleId) || { id: poleId, name: 'Inconnu' };
         
-        // Convertir le Set en tableau et récupérer les salles
-        const rooms = Array.from(roomIds)
-            .map(roomId => this.allRooms.find(r => r.id === roomId))
-            .filter(room => room !== undefined) as Room[];
+        console.log(`Creating program for pole ${pole.name} (${poleId}) with ${roomIds.size} rooms`);
         
         return {
             poleId: pole.id,
@@ -489,38 +576,93 @@ export class BoxReservationComponent implements OnInit {
         };
     });
   
+    console.log('Total programs created:', this.programs.length);
     this.filteredPrograms = [...this.programs];
+  }
+
+  // Créer un mapping entre les identifiants de room (peut être ID MongoDB ou numéro de téléphone) et les rooms
+  private getRoomMapping(): Map<string, Room> {
+    const mapping = new Map<string, Room>();
+    
+    this.allRooms.forEach(room => {
+      // Mapper par ID MongoDB
+      mapping.set(room.id, room);
+      // Mapper par nom de chambre (au cas où)
+      if (room.name) {
+        mapping.set(room.name, room);
+      }
+      // Si le room a un champ phone_number, mapper aussi par numéro de téléphone
+      // Note: Le modèle Room n'a pas de phone_number, mais on peut l'ajouter si nécessaire
+    });
+    
+    return mapping;
   }
 
   generateRoomDataForPole(poleId: string, roomIds: string[]): RoomProgram[] {
     console.log('Generating room data for pole:', poleId, 'with rooms:', roomIds);
     console.log('All rooms:', this.allRooms);
+    console.log('All box plans:', this.allBoxPlans);
     
-    const poleRooms = this.allRooms.filter(room => {
-        console.log('Checking room:', room.id, 'against:', roomIds);
-        return roomIds.includes(room.id);
+    // Créer un Set pour éviter les doublons
+    const processedRooms = new Set<string>();
+    const roomPrograms: RoomProgram[] = [];
+    
+    // Pour chaque identifiant de room (peut être ID MongoDB, nom, ou numéro de téléphone)
+    roomIds.forEach(roomIdentifier => {
+      if (processedRooms.has(roomIdentifier)) {
+        return; // Déjà traité
+      }
+      
+      // Filtrer les réservations pour ce room et ce pôle
+      const roomReservations = this.allBoxPlans.filter(plan => {
+        const matchesRoom = plan.room === roomIdentifier;
+        const matchesPole = plan.poll === poleId;
+        return matchesRoom && matchesPole;
+      });
+      
+      // Si pas de réservations, ignorer
+      if (roomReservations.length === 0) {
+        return;
+      }
+      
+      // Essayer de trouver la room correspondante dans la base
+      let room = this.allRooms.find(r => r.id === roomIdentifier);
+      
+      if (!room) {
+        room = this.allRooms.find(r => r.name === roomIdentifier);
+      }
+
+      if (!room) {
+        room = this.allRooms.find(r => r.phone_number && String(r.phone_number) === String(roomIdentifier));
+      }
+
+      // Si toujours pas trouvé, créer une room virtuelle avec l'identifiant
+      if (!room) {
+        room = {
+          id: roomIdentifier,
+          name: `Salle ${roomIdentifier}`,
+          status: 'Disponible'
+        } as Room;
+      }
+      
+      // Marquer comme traité
+      processedRooms.add(roomIdentifier);
+      
+      console.log(`Room ${roomIdentifier}: ${roomReservations.length} réservations`);
+      
+      roomPrograms.push({
+        roomId: room.id,
+        nom_salle: room.name,
+        num_salle: roomIdentifier, // Utiliser l'identifiant original (peut être numéro de téléphone)
+        data: {
+          matin: this.generateDayData('Matin', roomReservations),
+          AM: this.generateDayData('AM', roomReservations)
+        }
+      });
     });
     
-    console.log('Filtered pole rooms:', poleRooms);
-    
-    return poleRooms.map(room => {
-        const roomReservations = this.allBoxPlans.filter(plan => {
-            console.log('Checking plan:', plan.room, 'vs', room.id, 'and', plan.poll, 'vs', poleId);
-            return plan.room === room.id && plan.poll === poleId;
-        });
-        
-        console.log('Reservations for room', room.id, ':', roomReservations);
-        
-        return {
-            roomId: room.id,
-            nom_salle: room.name,
-            num_salle: room.phone_number || 'N/A',
-            data: {
-                matin: this.generateDayData('Matin', roomReservations),
-                AM: this.generateDayData('AM', roomReservations)
-            }
-        };
-    });
+    console.log('Generated room programs:', roomPrograms);
+    return roomPrograms;
   }
 
   calculateEndTime(startTime: string, consultationNumber: string | number, consultationTime: string | number): string {
@@ -609,6 +751,30 @@ export class BoxReservationComponent implements OnInit {
     return dayData;
   }*/
 
+  getSpecialityColorClass(speciality: string): string {
+    if (!speciality) {
+      return ''; // Pas de couleur si pas de spécialité
+    }
+    
+    const spec = speciality.toLowerCase();
+    
+    // Ce mapping doit correspondre à celui du backend
+    if (spec.includes('urologie')) {
+      return 'bg-yellow-200';
+    }
+    if (spec.includes('viscérale')) {
+      return 'bg-blue-200';
+    }
+    if (spec.includes('vasculaire')) {
+      return 'bg-green-200';
+    }
+    if (spec.includes('hépatho gastro')) {
+      return 'bg-pink-200';
+    }
+    
+    return ''; // Couleur par défaut
+  }
+
   generateDayData(period: string, reservations: BoxPlan[]): any {
     const days = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'];
     const dayData: any = {};
@@ -654,7 +820,8 @@ export class BoxReservationComponent implements OnInit {
                     name: doctor ? `Dr ${doctor.first_name}` : 'Inconnu',
                     time: res.period || 'N/A',
                     endTime: this.calculateEndTime(res.period, res.consultation_number, res.consultation_time),
-                    status: res.status // Ajout du statut
+                    status: res.status, // Ajout du statut
+                    speciality: res.comment // Récupérer la spécialité
                 };
             }) || []
         );
@@ -662,6 +829,7 @@ export class BoxReservationComponent implements OnInit {
         dayData[day] = {
             doctorsInfo: doctorsInfo,
             message: dayReservations.length > 0 ? dayReservations[0].status : 'Disponible', // Utilisation directe du statut
+            speciality: dayReservations.length > 0 ? dayReservations[0].comment : null, // Récupérer la spécialité
             'pas cs': consultationTime,
             'nbre cs': totalConsultations,
             'nbe med': totalDoctors,
@@ -693,8 +861,22 @@ export class BoxReservationComponent implements OnInit {
 
   getPeriodFromTime(time: string): string {
     if (!time) return 'AM';
-    const hour = parseInt(time.split(':')[0]);
-    return hour < 12 ? 'Matin' : 'AM';
+
+    const timeUpper = time.toUpperCase();
+    if (timeUpper.includes('MATIN') || timeUpper === 'MORNING') {
+      return 'Matin';
+    }
+    if (timeUpper.includes('AM') || timeUpper.includes('APRÈS-MIDI') || timeUpper.includes('APRES-MIDI')) {
+      return 'AM';
+    }
+
+    // Sinon, tenter de parser l'heure HH:mm
+    try {
+      const hour = parseInt(time.split(':')[0], 10);
+      return hour < 12 ? 'Matin' : 'AM';
+    } catch {
+      return 'AM';
+    }
   }
 
   applyFilters(): void {
@@ -752,22 +934,72 @@ export class BoxReservationComponent implements OnInit {
   }
 
   onUpload(event: any): void {
-    for (let file of event.files) {
-      this.uploadedFiles.push(file);
+    console.log('Upload event:', event);
+    if (event.originalEvent instanceof HttpResponse) {
+      const response = event.originalEvent.body;
+      console.log('Upload response:', response);
+      if (response && response.data) {
+        const message = response.message || 'Fichier uploadé avec succès';
+        this.showSuccess(message);
+        this.displayUploadDialog = false;
+        // Recharger les données après l'upload
+        console.log('Reloading data after upload...');
+        this.loadAllData();
+        // Filtrer par la semaine courante après rechargement
+        setTimeout(() => {
+          const weekToFilter = this.selectedDate || new Date();
+          this.filterBoxPlansByWeek(weekToFilter);
+        }, 500);
+      } else {
+        console.error('Upload response missing data:', response);
+        this.showError('Erreur lors de l\'upload du fichier');
+      }
+    } else {
+      console.error('Upload event is not HttpResponse:', event);
+      // Gérer les erreurs
+      this.showError('Échec de l\'upload du fichier');
     }
-    
-    // Ici vous pourriez implémenter l'envoi du fichier au serveur
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Fichier téléchargé',
-      detail: 'Le fichier a été téléchargé avec succès'
-    });
-    
-    this.displayUploadDialog = false;
+  }
+
+  onUploadError(error: any): void {
+    this.showError('Erreur lors de l\'upload du fichier');
   }
 
   showUploadDialog(): void {
     this.displayUploadDialog = true;
+    // Pré-remplir avec les valeurs par défaut
+    if (this.poles.length > 0 && !this.selectedPoleId) {
+      this.selectedPoleId = this.poles[0].id;
+    }
+    // Définir la date de début de la semaine actuelle
+    if (!this.selectedWeekStartDate) {
+      const currentWeekStart = this.getStartOfWeek(new Date());
+      this.selectedWeekStartDate = currentWeekStart.toISOString().split('T')[0];
+    }
+  }
+
+  getUploadUrl(): string {
+    if (this.useColorsMode && this.selectedPoleId && this.loggedInUserId) {
+      let url = `${this.uploadUrl}?use_colors=true&poll_id=${this.selectedPoleId}&staff_id=${this.loggedInUserId}`;
+      if (this.selectedWeekStartDate) {
+        // Convertir la date au format YYYY-MM-DD
+        let dateStr: string;
+        if (this.selectedWeekStartDate instanceof Date) {
+          dateStr = this.selectedWeekStartDate.toISOString().split('T')[0];
+        } else {
+          // C'est une string, s'assurer que c'est au bon format
+          const date = new Date(this.selectedWeekStartDate);
+          if (!isNaN(date.getTime())) {
+            dateStr = date.toISOString().split('T')[0];
+          } else {
+            dateStr = this.selectedWeekStartDate; // Utiliser tel quel si conversion échoue
+          }
+        }
+        url += `&week_start_date=${dateStr}`;
+      }
+      return url;
+    }
+    return this.uploadUrl;
   }
 
   private showError(message: string): void {

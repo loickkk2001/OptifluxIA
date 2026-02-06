@@ -41,7 +41,8 @@ async def register(room_info: RoomCreate):
             "name": room_info.name,
             "localisation": room_info.localisation,
             "description": room_info.description,
-            "status": room_info.status
+            "status": room_info.status,
+            "phone_number": room_info.phone_number
         }
         
         result = await create_room(room_data)
@@ -84,11 +85,61 @@ async def get_rooms():
                 "description": room["description"],
                 "matricule": room.get("matricule", ""),
                 "status": room.get("status", ""),
+                "phone_number": room.get("phone_number", ""),
                 "created_at": room.get("created_at", "").isoformat() if room.get("created_at") else "",
                 "updated_at": room.get("updated_at", "").isoformat() if room.get("updated_at") else ""
             } for room in room_l
         ]
         return {"message": "rooms récupérés avec succès", "data": room_list}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erreur interne du serveur: {str(e)}"
+        )
+
+@router.get("/rooms/by-identifier/{identifier}")
+async def get_room_by_identifier(identifier: str):
+    """
+    Recherche une chambre par ID MongoDB, nom, ou autre identifiant.
+    Utile pour mapper les numéros de téléphone aux IDs de chambres.
+    """
+    try:
+        # Essayer par ObjectId d'abord
+        try:
+            room = rooms.find_one({"_id": ObjectId(identifier)})
+            if room:
+                return {
+                    "message": "room récupéré avec succès",
+                    "data": {
+                        "id": str(room["_id"]),
+                        "name": room["name"],
+                        "localisation": room.get("localisation"),
+                        "description": room.get("description"),
+                        "matricule": room.get("matricule", ""),
+                        "status": room.get("status", ""),
+                    }
+                }
+        except:
+            pass
+        
+        # Essayer par nom
+        room = rooms.find_one({"name": identifier})
+        if room:
+            return {
+                "message": "room récupéré avec succès",
+                "data": {
+                    "id": str(room["_id"]),
+                    "name": room["name"],
+                    "localisation": room.get("localisation"),
+                    "description": room.get("description"),
+                    "matricule": room.get("matricule", ""),
+                    "status": room.get("status", ""),
+                }
+            }
+        
+        raise HTTPException(status_code=404, detail="room non trouvé")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -124,9 +175,9 @@ async def update_room(room_id: str, room_info: RoomCreate):
     try:
         room_data = {
             "name": room_info.name,
-            "name": room_info.name,
             "localisation": room_info.localisation,
             "description": room_info.description,
+            "phone_number": room_info.phone_number,
             "updated_at": datetime.now()
         }
         
@@ -144,6 +195,7 @@ async def update_room(room_id: str, room_info: RoomCreate):
                     "name": updated_room["name"],
                     "localisation": updated_room["localisation"],
                     "description": updated_room["description"],
+                    "phone_number": updated_room.get("phone_number", ""),
                     "matricule": updated_room.get("matricule", ""),
                     "updated_at": room_data["updated_at"].isoformat()
                 }
@@ -162,16 +214,30 @@ async def update_room_status(room_id: str, status_data: dict):
         status = status_data.get('status')
         if not status:
             raise HTTPException(status_code=422, detail="Le champ 'status' est requis")
-            
-        result = rooms.update_one(
-            {"_id": ObjectId(room_id)},
-            {"$set": {"status": status, "updated_at": datetime.now()}}
-        )
+        
+        # Vérifier si room_id est un ObjectId valide, sinon chercher par nom ou autre identifiant
+        try:
+            # Essayer de convertir en ObjectId
+            room_object_id = ObjectId(room_id)
+            result = rooms.update_one(
+                {"_id": room_object_id},
+                {"$set": {"status": status, "updated_at": datetime.now()}}
+            )
+        except:
+            # Si ce n'est pas un ObjectId valide, chercher par nom ou autre champ
+            # Par exemple, si room_id est un numéro de téléphone, chercher par un champ spécifique
+            # Pour l'instant, on essaie par nom
+            result = rooms.update_one(
+                {"name": room_id},
+                {"$set": {"status": status, "updated_at": datetime.now()}}
+            )
         
         if result.modified_count == 1:
             return {"message": "Statut de la chambre mis à jour avec succès"}
         else:
             raise HTTPException(status_code=404, detail="Chambre non trouvée")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500,

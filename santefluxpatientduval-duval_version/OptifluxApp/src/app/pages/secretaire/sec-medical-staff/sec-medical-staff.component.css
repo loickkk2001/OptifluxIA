@@ -35,3 +35,49 @@
     width: 100%; /* Largeur pleine pour tous les champs */
     max-width: 300px; /* Limite maximale pour la cohérence */
   }
+
+  /* Forcer la fermeture de l'overlay PrimeNG si bloqué */
+  ::ng-deep .p-component-overlay {
+    z-index: 1000 !important;
+  }
+
+  ::ng-deep .p-dialog-mask {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+  }
+
+  /* S'assurer que le contenu principal n'est pas bloqué */
+  .dashboard-container {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Supprimer les overlays bloqués orphelins - approche agressive */
+  ::ng-deep .p-component-overlay:empty {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  /* Forcer la suppression des overlays orphelins */
+  ::ng-deep .p-component-overlay[aria-hidden="true"] {
+    display: none !important;
+  }
+
+  /* S'assurer que les overlays ne bloquent pas quand ils sont cachés */
+  ::ng-deep .p-component-overlay[style*="display: none"] {
+    display: none !important;
+    pointer-events: none !important;
+  }
+
+  /* Permettre les interactions avec le contenu principal */
+  ::ng-deep body:not(.p-overlayblocked) {
+    overflow: auto !important;
+  }
+
+  /* S'assurer que le contenu n'est pas bloqué par des overlays invisibles */
+  ::ng-deep .p-component-overlay[style*="opacity: 0"],
+  ::ng-deep .p-component-overlay[style*="visibility: hidden"] {
+    pointer-events: none !important;
+    display: none !important;
+  }

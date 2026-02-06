@@ -1,0 +1,56 @@
+/* Assurer la visibilité des dates du calendrier */
+:host ::ng-deep .fc-daygrid-day-number {
+  color: #333 !important;
+  font-weight: 500;
+  padding: 4px;
+}
+
+:host ::ng-deep .fc-daygrid-day {
+  color: #333 !important;
+}
+
+:host ::ng-deep .fc-col-header-cell {
+  color: #333 !important;
+  font-weight: 600;
+}
+
+:host ::ng-deep .fc-daygrid-day-frame {
+  color: #333 !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
